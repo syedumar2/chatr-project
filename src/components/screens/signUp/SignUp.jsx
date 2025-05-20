@@ -7,23 +7,72 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check, CircleX, Info } from 'lucide-react';
+import { Check, CircleX, Info, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { useRef, useState,useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 
-const NAME_REGEX = /^[a-zA-Z]+(?:[A-Za-z]+)*$/;
-const EMAIL_REGEX = /[a-zA-Z0-9.-%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;
 const PWD_REGEX = /[a-zA-Z0-9]+$/;
 //TODO: make better password regex and validation
 
 const SignUp = () => {
-  
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const errRef = useRef();
 
+  const [name, setName] = useState("");
+  const [validName, setValidName] = useState(false);
+  const [nameFocus, setNameFocus] = useState(false);
 
+  const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
 
+  const [pwd, setPwd] = useState("");
+  const [validPwd, setValidPwd] = useState(false);
+  const [pwdFocus, setPwdFocus] = useState(false);
+
+  const [matchPwd, setMatchPwd] = useState("");
+  const [validMatch, setValidMatch] = useState(false);
+  const [matchFocus, setMatchFocus] = useState(false);
+
+  const [errMsg, setErrMsg] = useState("");
+  const [succes, setSucces] = useState(false);
+
+  // useEffect(() => {
+  //   nameRef.current.focus();
+  // }, []);
+
+  useEffect(() => {
+    const result = NAME_REGEX.test(name);
+    console.log(result);
+    console.log(name);
+    setValidName(result);
+  }, [name]);
+
+  useEffect(() => {
+    const result = PWD_REGEX.test(pwd);
+    console.log(result);
+    console.log(pwd);
+    setValidPwd(result);
+    const match = pwd === matchPwd;
+    setValidMatch(match);
+  }, [pwd, matchPwd]);
+
+  useEffect(() => {
+    const result = EMAIL_REGEX.test(email);
+    console.log(result);
+    console.log(email);
+    setValidEmail(result);
+  }, [email]);
+
+  useEffect(() => {
+    setErrMsg("");
+  }, [name, email, pwd, matchPwd]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-800">
@@ -37,9 +86,35 @@ const SignUp = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Full Name</Label>
-            <Input id="username" type="text" placeholder="Your username" />
+          <p
+            ref={errRef}
+            className={errMsg ? "errmsg" : "offscreen"}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </p>
+          <div className="space-y-2 ">
+            <Label htmlFor="name">Full Name:
+                <span className={validName && name ? "":"hidden"}><Check className="size-5"/></span>
+                 <span className={validName || !name ? "hidden":""}><X className="size-5"/></span>
+            </Label>
+          
+            <Input
+              id="name"
+              type="text"
+              placeholder="Your Name"
+              ref={nameRef}
+              autoComplete="off"
+              onChange={(e) => setName(e.target.value)}
+              required
+              aria-invalid={validName || !name ? "false" : "true"}
+              aria-describedby="namenote"
+              onFocus={() => setNameFocus(true)}
+              onBlur={() => setNameFocus(false)}
+            />
+            <div id="namenote" className={nameFocus && name && !validName ? "" : "hidden"}>
+               <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded"><Info /> Please enter your full name using letters and spaces only.</div>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -51,7 +126,11 @@ const SignUp = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input id="confirmPassword" type="password" placeholder="••••••••" />
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+            />
           </div>
           <Button variant="myButton" className="w-full mt-4">
             Sign Up
@@ -69,3 +148,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+//TODO make rest of the validation logic for Email and Password
