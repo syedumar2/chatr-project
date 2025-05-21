@@ -28,7 +28,7 @@ const SignIn = () => {
           <Button variant="myButton" className="w-full mt-4">Sign In</Button>
         </CardContent>
         <CardFooter  className="flex items-center gap-1 justify-center text-sm text-gray-400 mr-1">
-        Already have an account?{" "}
+        Don&apos;t have an account?{" "}
           <Link to="/signup" className="text-white underline">
             Sign up
           </Link>
