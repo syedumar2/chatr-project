@@ -6,6 +6,7 @@ const express = require("express");
 const app = express();
 
 const { RouterV1 } = require("./router");
+const { AuthRouter } = require("./router");
 
 
 app.use(cors("*"));
@@ -20,12 +21,15 @@ app.use((req, res, next) => {
       req.query
     )} :: ${JSON.stringify(req.params)} :: ${JSON.stringify(req.body)} `
   );
+  
   next();
 });
 //method path query params and body
 //query, params and body must be stringified since they are objects
 
-app.use("/user",RouterV1);
+app.use("/api/user",RouterV1);
+app.use("/api/auth",AuthRouter);
+
 
 //test request
 app.get("/", (req, res, next) => {

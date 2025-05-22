@@ -1,2 +1,3 @@
 const RouterV1 = require("./userRoutes");
-module.exports = { RouterV1 };
+const AuthRouter = require("./authRoutes");
+module.exports = { RouterV1,  AuthRouter };

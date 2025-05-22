@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Check, CircleX, Info, X } from "lucide-react";
+import axios from "@/api/axios";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ import { useRef, useState, useEffect } from "react";
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;
 const PWD_REGEX = /[a-zA-Z0-9]{8,30}$/;
+const REGISTER_URL = "/user/add-user";
 //TODO: make better password regex and validation
 
 const SignUp = () => {
@@ -74,12 +76,41 @@ const SignUp = () => {
     setErrMsg("");
   }, [name, email, pwd, matchPwd]);
 
-
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-  }
+    //additional check in case of button hack
+    const v1 = NAME_REGEX.test(name);
+    const v2 = EMAIL_REGEX.test(email);
+    const v3 = PWD_REGEX.test(pwd);
+    if (!v1 || !v2 || !v3) {
+      setErrMsg("Invalid Entry");
+      return;
+    }
+    try {
+      const response = axios.post(
+        REGISTER_URL,
+        JSON.stringify({ name, email, pwd }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+      console.log(response.accessToken);
+      console.log(JSON.stringify(response));
+      setSucces(true);
+      //clear input fields
+    } catch (error) {
+      if (!error.response) {
+        setErrMsg("No server response");
+      } else if (error.response?.status == 409) {
+        setErrMsg("UserName taken");
+      } else {
+        setErrMsg("Registration Failed")
+      }
+      errRef.current.focus();
+    }
+  };
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-800">
@@ -93,7 +124,6 @@ const SignUp = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}
@@ -102,9 +132,7 @@ const SignUp = () => {
             {errMsg}
           </p>
           <form onSubmit={handleSubmit}>
-
-          <div className="space-y-2 ">
-            
+            <div className="space-y-2 ">
               <Label htmlFor="name">
                 Full Name:
                 <span className={validName && name ? "" : "hidden"}>
@@ -136,8 +164,8 @@ const SignUp = () => {
                   only.
                 </div>
               </div>
-                        </div>
-                        <div className="space-y-2">
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">
                 Email
                 <span className={validEmail && email ? "" : "hidden"}>
@@ -168,11 +196,12 @@ const SignUp = () => {
                   <Info /> Enter a valid email like: user@domain.com.
                 </div>
               </div>
-                        </div>
-              
-                        <div className="space-y-2">
-              <Label htmlFor="password">Password
-                 <span className={validPwd && pwd ? "" : "hidden"}>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">
+                Password
+                <span className={validPwd && pwd ? "" : "hidden"}>
                   <Check className="size-5" />
                 </span>
                 <span className={validPwd || !pwd ? "hidden" : ""}>
@@ -200,15 +229,17 @@ const SignUp = () => {
                   letters and numbers.
                 </div>
               </div>
-                        </div>
-              
-                        <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password
-                         <span className={validMatch && matchPwd ? "" : "hidden"}>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">
+                Confirm Password
+                <span className={validMatch && matchPwd ? "" : "hidden"}>
                   <Check className="size-5" />
                 </span>
                 <span className={validMatch || !matchPwd ? "hidden" : ""}>
-                  <X className="size-5" /></span>
+                  <X className="size-5" />
+                </span>
               </Label>
               <Input
                 id="confirmPassword"
@@ -227,21 +258,31 @@ const SignUp = () => {
               />
               <div
                 id="matchpwdnote"
-                className={!validMatch && matchPwd && matchFocus ? "" : "hidden"}
+                className={
+                  !validMatch && matchPwd && matchFocus ? "" : "hidden"
+                }
               >
                 <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded">
                   <Info /> Password does not match.
                 </div>
               </div>
-                        </div>
-                        <Button type="submit" disabled={!validEmail || !validMatch || !validName || !validPwd ? true : false} variant="myButton" className="w-full mt-4">
+            </div>
+            <Button
+              type="submit"
+              disabled={
+                !validEmail || !validMatch || !validName || !validPwd
+                  ? true
+                  : false
+              }
+              variant="myButton"
+              className="w-full mt-4"
+            >
               Sign Up
-                        </Button>
-            </form>
+            </Button>
+          </form>
         </CardContent>
-        
+
         <CardFooter className="flex items-center gap-1 justify-center text-sm text-gray-400">
-          
           Already have an account?{" "}
           <Link to="/signin" className="text-white underline">
             Log in

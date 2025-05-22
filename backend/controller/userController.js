@@ -29,7 +29,7 @@ const getUser = async (req, res, next) => {
     res.json({
       success: true,
       message: "User read successfully",
-      data: await UserDao.getUser(req, req.body),
+      data: await UserDao.getUser(req.body),
     });
   } catch (error) {
     console.log("error", error);

@@ -1,18 +1,23 @@
 const { UserModel } = require("../models");
+const bcrypt = require("bcryptjs"); //pwd hasher
+const SALT_ROUNDS = 10;
 
 const addUser = async (UserData) => {
   try {
-    return await UserModel.create([UserData]);
+    const hashedPwd = await bcrypt.hash(UserData.pwd,SALT_ROUNDS);
+    const newUser = {...UserData, pwd: hashedPwd};
+    return await UserModel.create([newUser]);
   } catch (error) {
     throw error;
   }
 };
 
-const getUser = async (req, query) => {
+const getUser = async (query) => {
   try {
     return await UserModel.find(query).lean().exec();
   } catch (error) {
     throw error;
+    console.log(error);
   }
 };
 
