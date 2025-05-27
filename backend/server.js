@@ -1,29 +1,23 @@
 require("dotenv").config();
 const cors = require("cors");
-
+const cookieParser = require('cookie-parser')
 require("./db-config"); //to connect to db
 const express = require("express");
 const app = express();
 
 const { RouterV1 } = require("./router");
 const { AuthRouter } = require("./router");
+const logger = require("./middleware/logger");
 
 
 app.use(cors("*"));
 app.use(express.json());
+app.use(cookieParser());
 
 //todo build router
 
 //middleware to track requests
-app.use((req, res, next) => {
-  console.log(
-    `${new Date()} :: ${req.method} :: ${req.path} :: ${JSON.stringify(
-      req.query
-    )} :: ${JSON.stringify(req.params)} :: ${JSON.stringify(req.body)} `
-  );
-  
-  next();
-});
+app.use(logger);
 //method path query params and body
 //query, params and body must be stringified since they are objects
 

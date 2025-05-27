@@ -26,11 +26,19 @@ const addUser = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    res.json({
-      success: true,
-      message: "User read successfully",
-      data: await UserDao.getUser(req.body),
-    });
+    const userDetails = await UserDao.getUser(req.body);
+    if (userDetails.length === 0) {
+      res.json({
+        success: false,
+        message: "No such user read",
+      });
+    } else {
+      res.json({
+        success: true,
+        message: "User read successfully",
+        data: userDetails,
+      });
+    }
   } catch (error) {
     console.log("error", error);
     res.json({ succes: false, message: error?.message });

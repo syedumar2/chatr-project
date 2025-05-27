@@ -4,8 +4,8 @@ const SALT_ROUNDS = 10;
 
 const addUser = async (UserData) => {
   try {
-    const hashedPwd = await bcrypt.hash(UserData.pwd,SALT_ROUNDS);
-    const newUser = {...UserData, pwd: hashedPwd};
+    const hashedPwd = await bcrypt.hash(UserData.pwd, SALT_ROUNDS);
+    const newUser = { ...UserData, pwd: hashedPwd };
     return await UserModel.create([newUser]);
   } catch (error) {
     throw error;
@@ -37,9 +37,28 @@ const deleteUser = async (deleteQuery) => {
   }
 };
 
+const addRefreshToken = async (userId, refreshToken) => {
+  const user = await UserModel.findById(userId);
+  if (!user) throw new Error("User not found");
+  user.refreshTokens.push(refreshToken);
+  return await user.save();
+};
+
+const removeRefreshToken = async (userId, refreshToken) => {
+  const user = await UserModel.findById(userId);
+  if (!user) throw new Error("User not found");
+  
+  user.refreshTokens =  user.refreshTokens.filter((t) => t !== refreshToken); // return a new array that does not contain the refresh token
+  return await user.save();
+};
+
+//TODO
+
 module.exports = {
   addUser,
   deleteUser,
   updateUser,
   getUser,
+  addRefreshToken,
+  removeRefreshToken,
 };

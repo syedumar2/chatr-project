@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
     pwd: {
       type: String,
     },
+     refreshTokens: [String],
   },
   {
     timestamps: true,
