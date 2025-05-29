@@ -8,23 +8,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Check, CircleX, Info, X } from "lucide-react";
-import axios from "@/api/axios";
+import api from "../../../utils/axios";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;
 const PWD_REGEX = /[a-zA-Z0-9]{8,30}$/;
-const REGISTER_URL = "/user/add-user";
+
 //TODO: make better password regex and validation
 
 const SignUp = () => {
   const nameRef = useRef();
   const emailRef = useRef();
   const errRef = useRef();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [validName, setValidName] = useState(false);
@@ -32,7 +34,7 @@ const SignUp = () => {
 
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
-  const [emailFocus, setEmailFocus] = useState(false);
+
 
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
@@ -45,21 +47,18 @@ const SignUp = () => {
   const [errMsg, setErrMsg] = useState("");
   const [succes, setSucces] = useState(false);
 
-  // useEffect(() => {
-  //   nameRef.current.focus();
-  // }, []);
+  useEffect(() => {
+    nameRef.current.focus();
+  }, []);
 
   useEffect(() => {
     const result = NAME_REGEX.test(name);
-    console.log(result);
-    console.log(name);
+  
     setValidName(result);
   }, [name]);
 
   useEffect(() => {
     const result = PWD_REGEX.test(pwd);
-    console.log(result);
-    console.log(pwd);
     setValidPwd(result);
     const match = pwd === matchPwd;
     setValidMatch(match);
@@ -67,8 +66,7 @@ const SignUp = () => {
 
   useEffect(() => {
     const result = EMAIL_REGEX.test(email);
-    console.log(result);
-    console.log(email);
+ 
     setValidEmail(result);
   }, [email]);
 
@@ -76,7 +74,7 @@ const SignUp = () => {
     setErrMsg("");
   }, [name, email, pwd, matchPwd]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     //additional check in case of button hack
     const v1 = NAME_REGEX.test(name);
@@ -87,30 +85,36 @@ const SignUp = () => {
       return;
     }
     try {
-      const response = axios.post(
-        REGISTER_URL,
-        JSON.stringify({ name, email, pwd }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      console.log(response.data);
-      console.log(response.accessToken);
-      console.log(JSON.stringify(response));
+      const res  = await api.post("/register", { name, email, pwd });
+
+      if (res.data.success) {
+        alert("Register successfull");
+        navigate("/signin")
+      } else {
+        alert(res.data.message);
+      }
+      console.log(res.data); 
       setSucces(true);
-      //clear input fields
+      // clear input fields
     } catch (error) {
       if (!error.response) {
         setErrMsg("No server response");
-      } else if (error.response?.status == 409) {
-        setErrMsg("UserName taken");
-      } else {
-        setErrMsg("Registration Failed")
+      } else if (error.response?.status == 404) {
+        setErrMsg("This Email is already in use");
+      } else if (error.response?.status == 401) {
+        setErrMsg("Invalid Credentials");
+      }
+      else {
+        setErrMsg("Login Failed");
       }
       errRef.current.focus();
     }
   };
+
+
+  //UPDATE SIGN UP TESTING COMPLETE
+  //WORKING AS EXPECTED
+
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-800">

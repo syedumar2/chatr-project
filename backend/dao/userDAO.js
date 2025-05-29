@@ -40,17 +40,19 @@ const deleteUser = async (deleteQuery) => {
 const addRefreshToken = async (userId, refreshToken) => {
   const user = await UserModel.findById(userId);
   if (!user) throw new Error("User not found");
-  user.refreshTokens.push(refreshToken);
+  user.refreshTokens = refreshToken;
   return await user.save();
 };
 
 const removeRefreshToken = async (userId, refreshToken) => {
   const user = await UserModel.findById(userId);
   if (!user) throw new Error("User not found");
-  
-  user.refreshTokens =  user.refreshTokens.filter((t) => t !== refreshToken); // return a new array that does not contain the refresh token
+
+  user.refreshTokens = user.refreshTokens.filter((t) => t !== refreshToken); // return a new array that does not contain the refresh token
   return await user.save();
 };
+
+
 
 //TODO
 

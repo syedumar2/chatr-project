@@ -21,7 +21,7 @@ const registerUser = async (req, res) => {
     const existingUser = await UserDao.getUser({ email });
 
     if (existingUser.length > 0) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "User already exists",
       });
@@ -31,9 +31,7 @@ const registerUser = async (req, res) => {
     const newUser = newUserArr[0]; //this will return an array thats why we need to access the first item that has our actual user
     //1st item extracted is the userID OR THE obj id
 
- 
-
-    res.json({
+    return res.json({
       success: true,
       message: "Registration successful",
       data: { fullname: newUser.fullname, email: newUser.email },
@@ -50,19 +48,23 @@ const loginUser = async (req, res) => {
     if (!email || !pwd) {
       return res.status(400).json({
         success: false,
-        message: "Missing name, email or password",
+        message: "Missing email or password",
       });
     }
 
     const userArr = await UserDao.getUser({ email });
     const user = userArr[0];
     if (!user) {
-      return res.json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(pwd, user.pwd);
     if (!isMatch) {
-      return res.json({ success: false, message: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     const accessToken = generateAccessToken(user._id);
@@ -92,12 +94,13 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   const storedRefreshToken = req.cookies.refreshToken;
-  if (!storedRefreshToken) return res.status(204).json({ success: false, message: "No token found" });
+  if (!storedRefreshToken)
+    return res.status(204).json({ success: false, message: "No token found" });
 
   try {
     const decodedUser = verifyToken(storedRefreshToken);
     console.log(decodedUser);
-    
+
     await UserDao.removeRefreshToken(decodedUser._id, storedRefreshToken);
 
     res.clearCookie("refreshToken", {
@@ -106,7 +109,7 @@ const logoutUser = async (req, res) => {
       sameSite: "strict",
     });
     return res.json({
-      success: true, 
+      success: true,
       message: "Logged Out Successfully! ",
     });
   } catch (err) {
@@ -115,5 +118,30 @@ const logoutUser = async (req, res) => {
   }
 };
 //TODO TEST LOGOUT USING BROWSER since httpOnly cookies work on browser only
+const getProtectedData = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log(userId);
+    const userArr = await UserDao.getUser({_id: userId});
 
-module.exports = { loginUser, registerUser, logoutUser };
+    const user = userArr[0];
+
+
+    if (!user) {
+      return res.status(404).json({ success: true, message: "User not found" });
+    }
+    res.json({
+      success:true,
+      data:{
+        fullname: user.name,
+        email: user.email,
+        message:"Get Protected Data route hit"
+      }
+    })
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+module.exports = { loginUser, registerUser, logoutUser, getProtectedData };

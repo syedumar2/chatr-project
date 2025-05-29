@@ -10,7 +10,10 @@ const { AuthRouter } = require("./router");
 const logger = require("./middleware/logger");
 
 
-app.use(cors("*"));
+app.use(cors({
+  origin: 'http://localhost:5173', // frontend origin
+  credentials: true, // allow cookies
+}));
 app.use(express.json());
 app.use(cookieParser());
 
