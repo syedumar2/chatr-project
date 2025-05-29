@@ -12,7 +12,15 @@ const generateRefreshToken = (userId) => {
 };
 
 const verifyToken = (refreshToken) => {
-  return jwt.verify({ refreshToken }, process.env.REFRESH_TOKEN_SECRET);
+  try {
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+    return { decoded, error: null };
+  } catch (error) {
+    return { decoded: null, error };
+  }
 };
 
 module.exports = { generateAccessToken, generateRefreshToken, verifyToken };

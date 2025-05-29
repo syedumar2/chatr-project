@@ -98,10 +98,13 @@ const logoutUser = async (req, res) => {
     return res.status(204).json({ success: false, message: "No token found" });
 
   try {
+    console.log(storedRefreshToken);
     const decodedUser = verifyToken(storedRefreshToken);
-    console.log(decodedUser);
+    console.log(decodedUser.decoded.userId);
+    
 
-    await UserDao.removeRefreshToken(decodedUser._id, storedRefreshToken);
+    const output = await UserDao.removeRefreshToken(decodedUser.decoded.userId, storedRefreshToken);
+    console.log(output);
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
@@ -122,26 +125,68 @@ const getProtectedData = async (req, res) => {
   try {
     const userId = req.user.id;
     console.log(userId);
-    const userArr = await UserDao.getUser({_id: userId});
+    const userArr = await UserDao.getUser({ _id: userId });
 
     const user = userArr[0];
-
 
     if (!user) {
       return res.status(404).json({ success: true, message: "User not found" });
     }
     res.json({
-      success:true,
-      data:{
+      success: true,
+      data: {
         fullname: user.name,
         email: user.email,
-        message:"Get Protected Data route hit"
+        message: "Get Protected Data route hit",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const issueNewTokens = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.refreshToken) {
+    return res.status(401).json({ message: "Refresh token missing" });
+  }
+  const refreshToken = req.cookies.refreshToken;
+  try {
+    const { decoded, error } = verifyToken(refreshToken);
+    const userId = decoded.id;
+
+    const newAccessToken = generateAccessToken(userId);
+    if (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(403).json({ message: "Refresh token expired" });
+      } else if (error.name === "JsonWebTokenError") {
+        return res.status(403).json({ message: "Invalid refresh token" });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "Token verification failed", error: error.message });
       }
-    })
+    }
+
+    const newRefreshToken = generateRefreshToken(userId);
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken: newAccessToken });
 
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-module.exports = { loginUser, registerUser, logoutUser, getProtectedData };
+module.exports = {
+  loginUser,
+  registerUser,
+  logoutUser,
+  getProtectedData,
+  issueNewTokens,
+};

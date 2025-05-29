@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import api from "../../../utils/axios";
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/utils/AuthContext";
+
 
 //TODO refactor sign in component
 
@@ -21,6 +23,7 @@ const SignIn = () => {
   const emailRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
 
   const [email, setEmail] = useState("");
@@ -38,33 +41,16 @@ const SignIn = () => {
       setErrMsg("Invalid Entry");
       return;
     }
-
-    try {
-      const res = await api.post("/login", { email, pwd });
-
-      if (res.data.success) {
-        alert("Login successfull");
-        console.log("Access token recieved: ", res.data.accessToken);
-        localStorage.setItem("accessToken", res.data.accessToken);
-        console.log("Welcome ", res.data.data.email);
-        navigate("/dashboard");
-      } else {
-        alert(res.data.message);
-      }
-      console.log(res.data);
-      setSucces(true);
-      // clear input fields
-    } catch (error) {
-      if (!error.response) {
-        setErrMsg("No server response");
-      } else if (error.response?.status == 401) {
-        setErrMsg("Invalid Email or Password");
-      } else {
-        setErrMsg("Login Failed");
-      }
-      errRef.current.focus();
+    const res = await login(email,pwd);
+    if (res.success){
+      alert("Login Successfull");
+      navigate('/dashboard')
+    } else {
+      setErrMsg(res.message);  // Set error message in component
+    errRef.current?.focus();  
     }
   };
+
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-800">

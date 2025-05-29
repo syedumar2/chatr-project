@@ -12,3 +12,19 @@ project/
 ├── server.js            // Main server entry point
 ├── package.json         // Project dependencies and scripts
 └── .env                 // Environment variables
+
+<AuthProvider>
+  <BrowserRouter>
+    <Layout>
+      <Routes>
+        <ProtectedRoutes>
+          <Dashboard />
+          <Profile />
+        </ProtectedRoutes>
+        <SignIn />
+        <SignUp />
+        <Home />
+      </Routes>
+    </Layout>
+  </BrowserRouter>
+</AuthProvider>

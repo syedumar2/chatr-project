@@ -9,9 +9,11 @@ import Layout from "./components/Layout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import Dashboard from "./components/screens/dashboard/Dashboard";
 import Profile from "./components/screens/profile/Profile";
+import { AuthProvider } from "./utils/AuthContext";
 
 function App() {
   return (
+    <AuthProvider>
     <Layout>
       <BrowserRouter>
         <Routes>
@@ -26,6 +28,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </Layout>
+    </AuthProvider>
   );
 }
 

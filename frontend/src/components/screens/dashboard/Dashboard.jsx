@@ -1,26 +1,39 @@
 import { useContext, useEffect, useState } from "react";
 import api from "@/utils/axios";
 import { AuthContext } from "@/utils/AuthContext";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const { accessToken } = useContext(AuthContext);
-  console.log("Access Token fetched on dashboard is",accessToken);
+  const navigate = useNavigate();
+  const { accessToken, fetchProtectedData, logout } = useContext(AuthContext);
+
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const fetchProtectedData = async () => {
-      try {
-        const res = await api.get("/protected", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          withCredentials: true,
-        });
-        setUserData(res.data.data);
-      } catch (err) {
-        console.error(err.response?.data?.message || err.message);
+    const getData = async () => {
+      const res = await fetchProtectedData();
+
+      if (res.success) {
+        setUserData(res.userData);
+      }
+      else{
+         console.error(res.message);
       }
     };
-    fetchProtectedData();
-  }, []);
+    getData();
+  }, [fetchProtectedData]);
+
+  const logOut = async () => {
+    const res = await logout();
+    if (res.success) {
+      setUserData(null);
+      console.log(res.message);
+      navigate("/signin");
+    } else {
+      alert(res.message);
+    }
+  };
 
   return (
     <div>
@@ -30,6 +43,9 @@ const Dashboard = () => {
           <p>Fullname: {userData.fullname}</p>
           <p>Email: {userData.email}</p>
           <p>Message: {userData.message}</p>
+          <Button className="outline" onClick={logOut}>
+            Logout
+          </Button>
         </>
       ) : (
         <p>Loading...</p>
