@@ -1,18 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import api from "@/utils/axios";
-import { AuthContext } from "@/utils/AuthContext";
+import  AuthContext from "@/utils/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { accessToken, fetchProtectedData, logout } = useContext(AuthContext);
+  const { accessToken, fetchUserData, logout } = useContext(AuthContext);
 
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
-      const res = await fetchProtectedData();
+      const res = await fetchUserData();
 
       if (res.success) {
         setUserData(res.userData);
@@ -22,7 +22,7 @@ const Dashboard = () => {
       }
     };
     getData();
-  }, [fetchProtectedData]);
+  }, [fetchUserData]);
 
   const logOut = async () => {
     const res = await logout();
@@ -42,7 +42,7 @@ const Dashboard = () => {
         <>
           <p>Fullname: {userData.fullname}</p>
           <p>Email: {userData.email}</p>
-          <p>Message: {userData.message}</p>
+         
           <Button className="outline" onClick={logOut}>
             Logout
           </Button>

@@ -13,24 +13,19 @@ import { Link } from "react-router-dom";
 import api from "../../../utils/axios";
 import { useRef, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "@/utils/AuthContext";
-
+import AuthContext from "@/utils/AuthContext";
 
 //TODO refactor sign in component
 
 const SignIn = () => {
-
   const emailRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-
   const [email, setEmail] = useState("");
 
-
   const [pwd, setPwd] = useState("");
-  
 
   const [errMsg, setErrMsg] = useState("");
   const [succes, setSucces] = useState(false);
@@ -41,16 +36,17 @@ const SignIn = () => {
       setErrMsg("Invalid Entry");
       return;
     }
-    const res = await login(email,pwd);
-    if (res.success){
+    const res = await login(email, pwd);
+    if (res.success) {
       alert("Login Successfull");
-      navigate('/dashboard')
+      navigate("/dashboard");
     } else {
-      setErrMsg(res.message);  // Set error message in component
-    errRef.current?.focus();  
+      setErrMsg(res.message); // Set error message in component
+     //Bug fixed
+      
+      errRef.current?.focus();
     }
   };
-
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-800">
@@ -81,7 +77,6 @@ const SignIn = () => {
                 ref={emailRef}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-          
               />
             </div>
 
@@ -93,7 +88,6 @@ const SignIn = () => {
                 placeholder="••••••••"
                 onChange={(e) => setPwd(e.target.value)}
                 required
-           
               />
             </div>
 

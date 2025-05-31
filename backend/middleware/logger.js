@@ -4,8 +4,8 @@ const logger = (req, res, next) => {
       req.query
     )} :: ${JSON.stringify(req.params)} :: ${JSON.stringify(req.body)} `
   );
-  
-  next();
-}
 
-module.exports = logger;
+  next();
+};
+
+module.exports =  logger ;

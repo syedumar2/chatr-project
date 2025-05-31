@@ -10,11 +10,11 @@ const verifyAccessToken = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  console.log("Token received:", token);
+
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log("Decoded token:", decoded);
+    
     
     req.user = { id: decoded.userId }; // ✅ Fixed
 

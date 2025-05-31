@@ -42,6 +42,20 @@ const registerUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const userId = req.user.id;
+  const updates = req.body;
+  try {
+    const updatedUser = await UserDao.updateUser({ _id: userId }, updates);
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+    res.json({ success: true, message: "User updated", user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, pwd } = req.body;
@@ -98,13 +112,12 @@ const logoutUser = async (req, res) => {
     return res.status(204).json({ success: false, message: "No token found" });
 
   try {
-    console.log(storedRefreshToken);
     const decodedUser = verifyToken(storedRefreshToken);
-    console.log(decodedUser.decoded.userId);
-    
 
-    const output = await UserDao.removeRefreshToken(decodedUser.decoded.userId, storedRefreshToken);
-    console.log(output);
+    const output = await UserDao.removeRefreshToken(
+      decodedUser.decoded.userId,
+      storedRefreshToken
+    );
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
@@ -124,7 +137,7 @@ const logoutUser = async (req, res) => {
 const getProtectedData = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log(userId);
+
     const userArr = await UserDao.getUser({ _id: userId });
 
     const user = userArr[0];
@@ -177,7 +190,6 @@ const issueNewTokens = async (req, res) => {
     });
 
     res.json({ accessToken: newAccessToken });
-
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
@@ -186,6 +198,7 @@ const issueNewTokens = async (req, res) => {
 module.exports = {
   loginUser,
   registerUser,
+  updateUser,
   logoutUser,
   getProtectedData,
   issueNewTokens,

@@ -1,2 +1,3 @@
 const UserDao = require("./userDAO");
-module.exports = { UserDao };
+const ChannelDao = require("./channelDao");
+module.exports = { UserDao, ChannelDao };

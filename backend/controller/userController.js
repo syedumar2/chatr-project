@@ -1,5 +1,7 @@
 const { UserDao } = require("../dao");
 
+//master actions
+
 const addUser = async (req, res, next) => {
   try {
     const { fullname, email, pwd } = req.body;

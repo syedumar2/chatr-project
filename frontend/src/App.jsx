@@ -9,7 +9,8 @@ import Layout from "./components/Layout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import Dashboard from "./components/screens/dashboard/Dashboard";
 import Profile from "./components/screens/profile/Profile";
-import { AuthProvider } from "./utils/AuthContext";
+import AuthContext from "./utils/AuthContext";
+import AuthProvider from "./utils/AuthProvider";
 
 function App() {
   return (

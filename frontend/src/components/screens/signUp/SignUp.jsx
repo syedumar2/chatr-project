@@ -8,13 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Check, CircleX, Info, X } from "lucide-react";
-import api from "../../../utils/axios";
+
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "@/utils/AuthContext";
 
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;
@@ -27,6 +28,7 @@ const SignUp = () => {
   const emailRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
+  const { register } = useContext(AuthContext);
 
   const [name, setName] = useState("");
   const [validName, setValidName] = useState(false);
@@ -34,7 +36,7 @@ const SignUp = () => {
 
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
-
+   const [emailFocus, setEmailFocus] = useState(false);
 
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
@@ -53,7 +55,7 @@ const SignUp = () => {
 
   useEffect(() => {
     const result = NAME_REGEX.test(name);
-  
+
     setValidName(result);
   }, [name]);
 
@@ -66,7 +68,7 @@ const SignUp = () => {
 
   useEffect(() => {
     const result = EMAIL_REGEX.test(email);
- 
+
     setValidEmail(result);
   }, [email]);
 
@@ -84,37 +86,20 @@ const SignUp = () => {
       setErrMsg("Invalid Entry");
       return;
     }
-    try {
-      const res  = await api.post("/register", { name, email, pwd });
+    const res = await register(name, email, pwd);
 
-      if (res.data.success) {
-        alert("Register successfull");
-        navigate("/signin")
-      } else {
-        alert(res.data.message);
-      }
-      console.log(res.data); 
+    if (res.success) {
+      alert("Register successfull. You can now Log in");
+      navigate("/signin");
       setSucces(true);
-      // clear input fields
-    } catch (error) {
-      if (!error.response) {
-        setErrMsg("No server response");
-      } else if (error.response?.status == 404) {
-        setErrMsg("This Email is already in use");
-      } else if (error.response?.status == 401) {
-        setErrMsg("Invalid Credentials");
-      }
-      else {
-        setErrMsg("Login Failed");
-      }
-      errRef.current.focus();
+    } else {
+      setErrMsg(res.message);
+      errRef.current?.focus();
     }
   };
 
-
   //UPDATE SIGN UP TESTING COMPLETE
   //WORKING AS EXPECTED
-
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-800">

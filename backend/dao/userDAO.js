@@ -23,7 +23,12 @@ const getUser = async (query) => {
 
 const updateUser = async (query, updateData) => {
   try {
-    return await UserModel.findOneAndUpdate(query, updateData).lean().exec();
+    return await UserModel.findOneAndUpdate(query, updateData, {
+      new: true,
+      runValidators: true,
+    })
+      .lean()
+      .exec();
   } catch (error) {
     throw error;
   }
@@ -51,8 +56,6 @@ const removeRefreshToken = async (userId, refreshToken) => {
   user.refreshTokens = user.refreshTokens.filter((t) => t !== refreshToken); // return a new array that does not contain the refresh token
   return await user.save();
 };
-
-
 
 //TODO
 
