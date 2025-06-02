@@ -7,6 +7,8 @@ const {
   verifyToken,
 } = require("../utils/token");
 
+const SALT_ROUNDS = 10;
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, pwd } = req.body;
@@ -45,7 +47,12 @@ const registerUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const userId = req.user.id;
   const updates = req.body;
+
   try {
+    if (updates.pwd) {
+      const hashedPwd = await bcrypt.hash(updates.pwd, SALT_ROUNDS);
+      updates.pwd = hashedPwd;
+    }
     const updatedUser = await UserDao.updateUser({ _id: userId }, updates);
     if (!updatedUser) {
       return res.status(404).json({ success: false, error: "User not found" });

@@ -1,5 +1,5 @@
 const { UserModel } = require("../models");
-const bcrypt = require("bcryptjs"); //pwd hasher
+const bcrypt = require("bcryptjs");
 const SALT_ROUNDS = 10;
 
 const addUser = async (UserData) => {

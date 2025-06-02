@@ -1,5 +1,5 @@
 const UserModel =  require("./userModel");
 const ChannelModel = require("./channelModel")
-const messageModel = require("./messageModel")
+const MessageModel = require("./messageModel")
 
-module.exports = { UserModel, ChannelModel, messageModel };
+module.exports = { UserModel, ChannelModel, MessageModel };

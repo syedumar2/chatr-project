@@ -39,12 +39,14 @@ const deleteChannel = async (deleteQuery) => {
   }
 };
 
-const deleteAllChannels = async (userId) => {
+const deleteAllChannels = async (channelId) => {
    try {
-    return await ChannelModel.deleteMany(userId).lean().exec();
+    return await ChannelModel.deleteMany(channelId).lean().exec();
   } catch (error) {
     throw error;
   }
 }
 
-module.exports = { addChannel, getChannel, updateChannel, deleteChannel };
+//TODO build controller function for deleting all channels
+
+module.exports = { addChannel, getChannel, updateChannel, deleteChannel, deleteAllChannels };

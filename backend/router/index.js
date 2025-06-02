@@ -1,3 +1,5 @@
-const RouterV1 = require("./userRoutes");
+const MasterRouter = require("./userRoutes");
 const AuthRouter = require("./authRoutes");
-module.exports = { RouterV1,  AuthRouter };
+const ChannelRoutes = require("./channelRoutes");
+const MessageRoutes = require("./messageRoutes");
+module.exports = { MasterRouter, AuthRouter, ChannelRoutes, MessageRoutes };
