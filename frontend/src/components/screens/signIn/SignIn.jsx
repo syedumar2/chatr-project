@@ -10,10 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import api from "../../../utils/axios";
+
 import { useRef, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "@/utils/AuthContext";
+import AuthContext from "../../../utils/contexts/auth/AuthContext";
 
 //TODO refactor sign in component
 

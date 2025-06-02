@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AuthContext from "./AuthContext";
-import api from "./axios";
+import api from "../../axios";
 
 
 

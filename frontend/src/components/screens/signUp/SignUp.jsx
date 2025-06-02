@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useRef, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "@/utils/AuthContext";
+import AuthContext from "../../../utils/contexts/auth/AuthContext";
 
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;

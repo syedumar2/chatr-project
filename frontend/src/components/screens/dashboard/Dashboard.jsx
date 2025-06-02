@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import api from "@/utils/axios";
-import  AuthContext from "@/utils/AuthContext";
+
+import AuthContext from "../../../utils/contexts/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -16,9 +16,8 @@ const Dashboard = () => {
 
       if (res.success) {
         setUserData(res.userData);
-      }
-      else{
-         console.error(res.message);
+      } else {
+        console.error(res.message);
       }
     };
     getData();
@@ -42,7 +41,7 @@ const Dashboard = () => {
         <>
           <p>Fullname: {userData.fullname}</p>
           <p>Email: {userData.email}</p>
-         
+
           <Button className="outline" onClick={logOut}>
             Logout
           </Button>
