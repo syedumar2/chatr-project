@@ -17,6 +17,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 const Layout = ({ children }) => {
+  const [loading, setLoading] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { accessToken, fetchUserData, logout } = useContext(AuthContext);
@@ -32,7 +33,14 @@ const Layout = ({ children }) => {
         console.error(res.message);
       }
     };
-    getData();
+    try {
+      setLoading(true);
+      getData();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }, [fetchUserData]);
 
   const logOut = async () => {
@@ -46,9 +54,9 @@ const Layout = ({ children }) => {
     }
   };
 
-  return (
-    <SidebarProvider className="p-0 mx-0">
-      <AppSidebar />
+  return !loading ? (
+    <SidebarProvider className="p-0 mx-0 ">
+      <AppSidebar/>
       <main className="flex-1 p-0">
         <nav className="flex items-center justify-between gap-6 p-4  w-full h-14 bg-blue-900 dark:bg-gray-900">
           <div className="flex items-center gap-8 text-xl">
@@ -77,9 +85,15 @@ const Layout = ({ children }) => {
               <DropdownMenuTrigger>
                 <Avatar className={"size-10"}>
                   <AvatarImage />
-                  <AvatarFallback className=" p-2 text-2xl bg-purple-600 ">
-                    {userData.fullname.charAt(0).toUpperCase()}
-                  </AvatarFallback>
+                  {userData ? (
+                    <AvatarFallback className=" p-2 text-2xl bg-purple-600 ">
+                      {userData?.fullname?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  ) : (
+                    <AvatarFallback className="...">
+                      <LoaderCircle className="animate-spin" />
+                    </AvatarFallback>
+                  )}
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -91,12 +105,12 @@ const Layout = ({ children }) => {
                   <div className="bg-accent rounded p-2">
                     <div className="flex-col items-center px-2 py-2 text-sm ">
                       <p>
-                        <span> Name: {userData.fullname} </span>{" "}
+                        <span> Name: {userData?.fullname} </span>{" "}
                       </p>
                     </div>
                     <div className="flex-col items-center px-2 py-2 text-sm ">
                       <p>
-                        <span>Email: {userData.email}</span>
+                        <span>Email: {userData?.email}</span>
                       </p>
                     </div>
                   </div>
@@ -104,11 +118,11 @@ const Layout = ({ children }) => {
                   <LoaderCircle className="animate-spin" />
                 )}
 
-                <DropdownMenuItem>Contacts</DropdownMenuItem>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+              
+                <DropdownMenuItem className={"ml-1.5"}>Profile</DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
-                  className="p-2"
+                  className="p-2 ml-1.5"
                   onClick={logout}
                 >
                   Logout
@@ -120,6 +134,8 @@ const Layout = ({ children }) => {
         {children}
       </main>
     </SidebarProvider>
+  ) : (
+    <h3>Loading...</h3>
   );
 };
 
