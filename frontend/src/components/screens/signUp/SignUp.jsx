@@ -7,14 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check, CircleX, Info, X } from "lucide-react";
-
+import { Check, Moon, Sun, Info, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useRef, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../../utils/contexts/theme/ThemeContext";
 import AuthContext from "../../../utils/contexts/auth/AuthContext";
 
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
@@ -36,7 +36,7 @@ const SignUp = () => {
 
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
-   const [emailFocus, setEmailFocus] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
 
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
@@ -97,18 +97,24 @@ const SignUp = () => {
       errRef.current?.focus();
     }
   };
-
+  const { theme, toggleTheme } = useTheme();
   //UPDATE SIGN UP TESTING COMPLETE
   //WORKING AS EXPECTED
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-800">
-      <Card className="w-full max-w-sm p-6 shadow-lg border border-border bg-gray-700 text-white">
+    <section className="relative flex items-center justify-center min-h-screen bg-blue-300 dark:bg-gray-800">
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 p-2 rounded-full  bg-gray-200 dark:bg-gray-700 text-black dark:text-white transition-colors "
+      >
+        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+      <Card className="w-full max-w-sm p-6 shadow-lg border border-border  bg-white dark:bg-gray-700 text-black dark:text-white">
         <CardHeader>
           <CardTitle className="text-2xl text-center tracking-wide font-thin">
             Create Account
           </CardTitle>
-          <CardDescription className="text-center mb-4">
+          <CardDescription className="text-center mb-4  text-gray-600 dark:text-gray-300">
             Sign up to start chatting!
           </CardDescription>
         </CardHeader>
@@ -122,7 +128,7 @@ const SignUp = () => {
           </p>
           <form onSubmit={handleSubmit}>
             <div className="space-y-2 ">
-              <Label htmlFor="name">
+              <Label htmlFor="name" className="dark:text-gray-200">
                 Full Name:
                 <span className={validName && name ? "" : "hidden"}>
                   <Check className="size-5" />
@@ -143,19 +149,20 @@ const SignUp = () => {
                 aria-describedby="namenote"
                 onFocus={() => setNameFocus(true)}
                 onBlur={() => setNameFocus(false)}
+                className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
               />
               <div
                 id="namenote"
                 className={nameFocus && name && !validName ? "" : "hidden"}
               >
-                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded">
+                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded text-white dark:text-black">
                   <Info /> Please enter your full name using letters and spaces
                   only.
                 </div>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">
+              <Label htmlFor="email" className="dark:text-gray-200">
                 Email
                 <span className={validEmail && email ? "" : "hidden"}>
                   <Check className="size-5" />
@@ -176,19 +183,20 @@ const SignUp = () => {
                 aria-description="emailnote"
                 onFocus={() => setEmailFocus(true)}
                 onBlur={() => setEmailFocus(false)}
+                className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
               />
               <div
                 id="emailnote"
                 className={emailFocus && email && !validEmail ? "" : "hidden"}
               >
-                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded">
+                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded text-white dark:text-black">
                   <Info /> Enter a valid email like: user@domain.com.
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">
+              <Label htmlFor="password" className="dark:text-gray-200">
                 Password
                 <span className={validPwd && pwd ? "" : "hidden"}>
                   <Check className="size-5" />
@@ -208,12 +216,13 @@ const SignUp = () => {
                 aria-description="pwdnote"
                 onFocus={() => setPwdFocus(true)}
                 onBlur={() => setPwdFocus(false)}
+                className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
               />
               <div
                 id="pwdnote"
                 className={!validPwd && pwd && pwdFocus ? "" : "hidden"}
               >
-                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded">
+                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded text-white dark:text-black">
                   <Info /> Password must be at least 8 characters and include
                   letters and numbers.
                 </div>
@@ -221,7 +230,7 @@ const SignUp = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">
+              <Label htmlFor="confirmPassword" className="dark:text-gray-200">
                 Confirm Password
                 <span className={validMatch && matchPwd ? "" : "hidden"}>
                   <Check className="size-5" />
@@ -244,6 +253,7 @@ const SignUp = () => {
                 aria-description="matchpwdnote"
                 onFocus={() => setMatchFocus(true)}
                 onBlur={() => setMatchFocus(false)}
+                className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100 "
               />
               <div
                 id="matchpwdnote"
@@ -251,7 +261,7 @@ const SignUp = () => {
                   !validMatch && matchPwd && matchFocus ? "" : "hidden"
                 }
               >
-                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded">
+                <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded text-white dark:text-black">
                   <Info /> Password does not match.
                 </div>
               </div>
@@ -264,16 +274,19 @@ const SignUp = () => {
                   : false
               }
               variant="myButton"
-              className="w-full mt-4"
+              className="w-full mt-4  bg-blue-600 dark:bg-blue-500 text-white"
             >
               Sign Up
             </Button>
           </form>
         </CardContent>
 
-        <CardFooter className="flex items-center gap-1 justify-center text-sm text-gray-400">
+        <CardFooter className="flex items-center gap-1 justify-center text-sm text-gray-600 dark:text-gray-300">
           Already have an account?{" "}
-          <Link to="/signin" className="text-white underline">
+          <Link
+            to="/signin"
+            className="text-blue-600 dark:text-blue-400 underline"
+          >
             Log in
           </Link>
         </CardFooter>

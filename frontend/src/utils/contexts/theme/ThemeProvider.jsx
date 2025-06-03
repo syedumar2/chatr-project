@@ -8,7 +8,7 @@ const ThemeProvider = ({ children }) => {
     if (theme === "dark") {
       root.classList.add("dark");
     } else {
-      root.classList.remove("dark");
+      root.classList.remove("dark"); //and set default light
     }
   }, [theme]);
 

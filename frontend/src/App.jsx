@@ -11,6 +11,7 @@ import Profile from "./components/screens/profile/Profile";
 
 import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
+import Layout from "./components/Layout";
 
 function App() {
   return (
@@ -18,10 +19,12 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route element={<ProtectedRoutes />}>
-              <Route element={<Dashboard />} path="/dashboard" />
-              <Route element={<Profile />} path="/profile" />
-            </Route>
+          
+              <Route element={<ProtectedRoutes />}>
+                <Route element={<Dashboard />} path="/dashboard" />
+                <Route element={<Profile />} path="/profile" />
+              </Route>
+            
 
             <Route element={<SignIn />} path="/signin" />
             <Route element={<SignUp />} path="/signup" />

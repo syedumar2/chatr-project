@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import AuthContext from "./contexts/auth/AuthContext";
+import Layout from "@/components/Layout";
+
 
 export const ProtectedRoutes = () => {
   const { accessToken, authLoading } = useContext(AuthContext);
@@ -10,7 +12,7 @@ export const ProtectedRoutes = () => {
   if (!accessToken) {
     return <Navigate to="/signin" />;
   }
-  return <Outlet />;
+  return <Layout> <Outlet /></Layout>;
 };
 
 export default ProtectedRoutes;
