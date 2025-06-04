@@ -1,10 +1,12 @@
 const { UserDao } = require("../dao");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const tokenGenerator = require("../utils");
 const {
   generateAccessToken,
   generateRefreshToken,
   verifyToken,
+  verifyAccToken,
 } = require("../utils/token");
 
 const SALT_ROUNDS = 10;
@@ -172,24 +174,15 @@ const issueNewTokens = async (req, res) => {
   }
   const refreshToken = req.cookies.refreshToken;
   try {
-    const { decoded, error } = verifyToken(refreshToken);
-    const userId = decoded.id;
-
+    const result = verifyToken(refreshToken);
+    const userId = result.decoded.userId;
     const newAccessToken = generateAccessToken(userId);
-    if (error) {
-      if (error.name === "TokenExpiredError") {
-        return res.status(403).json({ message: "Refresh token expired" });
-      } else if (error.name === "JsonWebTokenError") {
-        return res.status(403).json({ message: "Invalid refresh token" });
-      } else {
-        return res
-          .status(500)
-          .json({ message: "Token verification failed", error: error.message });
-      }
-    }
+    const newCookieToken = generateRefreshToken(userId);
 
-    const newRefreshToken = generateRefreshToken(userId);
-    res.cookie("refreshToken", newRefreshToken, {
+    console.log("Our new aToken is", newAccessToken);
+    console.log("Our new rToken is", newCookieToken);
+
+    res.cookie("refreshToken", newCookieToken, {
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
@@ -198,7 +191,15 @@ const issueNewTokens = async (req, res) => {
 
     res.json({ accessToken: newAccessToken });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Token verification failed:", error.name, error.message);
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(403).json({ message: "Refresh token expired" });
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

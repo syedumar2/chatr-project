@@ -1,10 +1,16 @@
 import axios from "axios";
-import refreshToken from "./refreshToken";
+
 import handle401Error from "./handle401";
 const api = axios.create({
   baseURL: "http://localhost:3000/api/auth",
   withCredentials: true, //sends cookies
 });
+
+export const channelApi = axios.create({
+  baseURL: "http://localhost:3000/api/channel",
+  withCredentials: true, //sends cookies
+});
+
 // Interceptor: Automatically refresh token on 401
 
 // Attach response interceptor
@@ -13,4 +19,8 @@ api.interceptors.response.use(
   (error) => handle401Error(error, api)
 );
 
+channelApi.interceptors.response.use(
+  res => res,
+  error => handle401Error(error, channelApi)
+);
 export default api;

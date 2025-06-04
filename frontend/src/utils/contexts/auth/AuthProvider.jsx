@@ -2,10 +2,6 @@ import { useState, useEffect } from "react";
 import AuthContext from "./AuthContext";
 import api from "../../axios";
 
-
-
-
-
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [user, setUser] = useState(null);
@@ -43,7 +39,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-
       const res = await api.post("/logout");
       localStorage.removeItem("accessToken");
 
@@ -51,7 +46,6 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       return { success: true, message: res.data.message };
     } catch (error) {
-
       console.log(error);
       if (!error.response) {
         return { success: false, message: "No server response" };
@@ -88,11 +82,12 @@ export const AuthProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${accessToken}` },
         withCredentials: true,
       });
-      console.log(res);
-      setUser(res.data.data.email);
-      return { success: true, userData: res.data.data };
+      if (res.data.success) {
+        setUser(res.data.data.email);
+        return { success: true, userData: res.data.data };
+      }
     } catch (err) {
-      console.error(err.response?.data?.message || err.message);
+      console.error(err?.response?.data?.message || err?.message);
     }
   };
 

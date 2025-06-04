@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthContext from "../utils/contexts/auth/AuthContext";
-
+import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import { useNavigate } from "react-router-dom";
 import { Handshake, Moon, Sun, LoaderCircle } from "lucide-react";
 import { useTheme } from "../utils/contexts/theme/ThemeContext";
@@ -21,18 +21,21 @@ const Layout = ({ children }) => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { accessToken, fetchUserData, logout } = useContext(AuthContext);
+  const { getChannelData } = useContext(ChannelContext);
   const [userData, setUserData] = useState("");
 
   useEffect(() => {
     const getData = async () => {
       const res = await fetchUserData();
 
-      if (res.success) {
+      if (res?.success) {
         setUserData(res.userData);
       } else {
-        console.error(res.message);
+        console.error(res?.message);
       }
     };
+
+    
     try {
       setLoading(true);
       getData();
@@ -42,6 +45,8 @@ const Layout = ({ children }) => {
       setLoading(false);
     }
   }, [fetchUserData]);
+  
+
 
   const logOut = async () => {
     const res = await logout();

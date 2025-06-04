@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Calendar,
   Home,
@@ -10,8 +10,9 @@ import {
   ChevronDown,
   ChevronRight,
   Hash,
-  UserPen 
+  UserPen,
 } from "lucide-react";
+import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 
 import {
   Sidebar,
@@ -23,13 +24,22 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router-dom";
 
 const AppSidebar = () => {
   const [channelsOpen, setChannelsOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
+  const { channelData, getChannelData } = useContext(ChannelContext);
 
   const toggleContacts = () => setContactsOpen(!contactsOpen);
   const toggleChannels = () => setChannelsOpen(!channelsOpen);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getChannelData();
+    };
+    fetchData();
+  }, []);
 
   return (
     <Sidebar>
@@ -69,32 +79,48 @@ const AppSidebar = () => {
               </SidebarMenuItem>
 
               {/* Submenu - Hardcoded channels */}
-              {channelsOpen && (
-                <div className="ml-8 mt-1 space-y-1 text-sm">
-                  <a
-                    href="/channel/general"
-                    className="flex items-center gap-2 hover:underline"
-                  >
-                    <Hash size={16} />
-                    <span>general</span>
-                  </a>
-                  <a
-                    href="/channel/random"
-                    className="flex items-center gap-2 hover:underline"
-                  >
-                    <Hash size={16} />
-                    <span>random</span>
-                  </a>
-                  <a
-                    href="/channel/dev"
-                    className="flex items-center gap-2 hover:underline"
-                  >
-                    <Hash size={16} />
-                    <span>dev</span>
-                  </a>
-                </div>
-              )}
-                     {/* Contacts */}
+              {channelsOpen &&
+                (channelData ? (
+                  <div className="ml-8 mt-1 space-y-1 text-sm">
+                    {channelData.map((channel) => (
+                      <div
+                        className="flex items-center gap-2 hover:underline"
+                        key={channel._id}
+                      >
+                        <Hash size={16} />
+                        <Link to={`/channel/${channel._id}`}>
+                          {" "}
+                          {channel.name}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="ml-8 mt-1 space-y-1 text-sm">
+                    <a
+                      href="/channel/general"
+                      className="flex items-center gap-2 hover:underline"
+                    >
+                      <Hash size={16} />
+                      <span>general</span>
+                    </a>
+                    <a
+                      href="/channel/random"
+                      className="flex items-center gap-2 hover:underline"
+                    >
+                      <Hash size={16} />
+                      <span>random</span>
+                    </a>
+                    <a
+                      href="/channel/dev"
+                      className="flex items-center gap-2 hover:underline"
+                    >
+                      <Hash size={16} />
+                      <span>dev</span>
+                    </a>
+                  </div>
+                ))}
+              {/* Contacts */}
 
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -120,16 +146,11 @@ const AppSidebar = () => {
                     <span>Random User 1</span>
                   </div>
                   <div className="flex items-center gap-2 hover:underline">
-                    <CircleUser size={20}  />
+                    <CircleUser size={20} />
                     <span>Random User 2</span>
                   </div>
                 </div>
-
-                
               )}
-       
-           
-            </SidebarMenu>
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
@@ -139,6 +160,7 @@ const AppSidebar = () => {
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
@@ -148,4 +170,4 @@ const AppSidebar = () => {
 
 export { AppSidebar };
 
-//TODO replace harcoded code with dynamic rest api query and dynamic channel component generation 
+//TODO replace harcoded code with dynamic rest api query and dynamic channel component generation

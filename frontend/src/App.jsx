@@ -8,29 +8,30 @@ import Home from "./components/screens/home/Home";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import Dashboard from "./components/screens/dashboard/Dashboard";
 import Profile from "./components/screens/profile/Profile";
+import ChannelProvider from "./utils/contexts/channel/ChannelProvider";
 
 import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
-import Layout from "./components/Layout";
+
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-          
+        <ChannelProvider>
+          <BrowserRouter>
+            <Routes>
               <Route element={<ProtectedRoutes />}>
                 <Route element={<Dashboard />} path="/dashboard" />
                 <Route element={<Profile />} path="/profile" />
               </Route>
-            
 
-            <Route element={<SignIn />} path="/signin" />
-            <Route element={<SignUp />} path="/signup" />
-            <Route element={<Home />} path="/" />
-          </Routes>
-        </BrowserRouter>
+              <Route element={<SignIn />} path="/signin" />
+              <Route element={<SignUp />} path="/signup" />
+              <Route element={<Home />} path="/" />
+            </Routes>
+          </BrowserRouter>
+        </ChannelProvider>
       </AuthProvider>
     </ThemeProvider>
   );
