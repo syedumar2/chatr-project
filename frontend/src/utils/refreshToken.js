@@ -8,7 +8,7 @@ export default async function refreshToken() {
     {},
     { withCredentials: true } // Include cookies if refresh token is in a cookie
   );
-  console.log(res);
+
 
   const newAccessToken = res.data.accessToken;
   localStorage.setItem("accessToken", newAccessToken); // optional

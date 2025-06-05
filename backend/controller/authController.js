@@ -179,9 +179,7 @@ const issueNewTokens = async (req, res) => {
     const newAccessToken = generateAccessToken(userId);
     const newCookieToken = generateRefreshToken(userId);
 
-    console.log("Our new aToken is", newAccessToken);
-    console.log("Our new rToken is", newCookieToken);
-
+ 
     res.cookie("refreshToken", newCookieToken, {
       httpOnly: true,
       secure: false,

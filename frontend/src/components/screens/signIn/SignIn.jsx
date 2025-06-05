@@ -1,4 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { toast, Toaster } from 'sonner';
+
+
+
 import {
   Card,
   CardContent,
@@ -16,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../../../utils/contexts/auth/AuthContext";
 import { useTheme } from "../../../utils/contexts/theme/ThemeContext";
 import { Moon, Sun } from "lucide-react";
+
 
 const SignIn = () => {
   const emailRef = useRef();
@@ -36,9 +41,11 @@ const SignIn = () => {
     }
     const res = await login(email, pwd);
     if (res.success) {
-      alert("Login Successful");
-      navigate("/dashboard");
+      toast.loading("Logging in");
+      const redirect = () => navigate("/dashboard");
+      setTimeout(redirect,3000);
     } else {
+      toast.error(res.message)
       setErrMsg(res.message);
       errRef.current?.focus();
     }
@@ -109,6 +116,7 @@ const SignIn = () => {
             >
               Log in
             </Button>
+              <Toaster position="top-center" />
           </form>
         </CardContent>
 

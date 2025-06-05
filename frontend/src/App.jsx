@@ -12,6 +12,7 @@ import ChannelProvider from "./utils/contexts/channel/ChannelProvider";
 
 import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
+import Channel from "./components/screens/channels/Channel";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
               <Route element={<ProtectedRoutes />}>
                 <Route element={<Dashboard />} path="/dashboard" />
                 <Route element={<Profile />} path="/profile" />
+                <Route element={<Channel/>} path = "/channel/:channelId" />
               </Route>
 
               <Route element={<SignIn />} path="/signin" />

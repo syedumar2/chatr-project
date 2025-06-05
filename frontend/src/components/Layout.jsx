@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 const Layout = ({ children }) => {
   const [loading, setLoading] = useState(false);
@@ -35,18 +36,16 @@ const Layout = ({ children }) => {
       }
     };
 
-    
     try {
       setLoading(true);
       getData();
+      getChannelData();
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
   }, [fetchUserData]);
-  
-
 
   const logOut = async () => {
     const res = await logout();
@@ -61,7 +60,7 @@ const Layout = ({ children }) => {
 
   return !loading ? (
     <SidebarProvider className="p-0 mx-0 ">
-      <AppSidebar/>
+      <AppSidebar />
       <main className="flex-1 p-0">
         <nav className="flex items-center justify-between gap-6 p-4  w-full h-14 bg-blue-900 dark:bg-gray-900">
           <div className="flex items-center gap-8 text-xl">
@@ -123,8 +122,9 @@ const Layout = ({ children }) => {
                   <LoaderCircle className="animate-spin" />
                 )}
 
-              
-                <DropdownMenuItem className={"ml-1.5"}>Profile</DropdownMenuItem>
+                <DropdownMenuItem className={"ml-1.5"}>
+                  Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
                   className="p-2 ml-1.5"
@@ -138,6 +138,7 @@ const Layout = ({ children }) => {
         </nav>
         {children}
       </main>
+      <Toaster richColors position="top-center" />
     </SidebarProvider>
   ) : (
     <h3>Loading...</h3>

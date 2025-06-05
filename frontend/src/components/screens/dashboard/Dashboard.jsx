@@ -5,23 +5,27 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+
 import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import { Textarea } from "@/components/ui/textarea";
 import { CirclePlus } from "lucide-react";
+import { toast } from "sonner";
 
 const Dashboard = () => {
+ 
   const { channelData, getChannelData, createChannel } =
     useContext(ChannelContext);
+
   const [members, setMembers] = useState([]);
   const [email, setEmail] = useState("");
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [errMsg, setErrMsg] = useState("");
@@ -29,6 +33,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       await getChannelData();
+
     };
     fetchData();
   }, []);
@@ -48,11 +53,16 @@ const Dashboard = () => {
       return;
     }
     const res = await createChannel(name, description, members);
+
     if (res.success) {
-      alert("Channel Creation successfull");
+      toast.success("Channel Created Successfully");
+      setOpen(false);
+      getChannelData();
     } else {
+      toast.error(`Error: ${res.message}` )
       setErrMsg(res.message);
       errRef.current?.focus();
+      //TODO remove errRef and errMsg later
     }
   };
 
@@ -61,6 +71,7 @@ const Dashboard = () => {
   };
 
   return (
+    
     <div className="mx-auto my-10 bg-white text-black px-2 py-20 text-center min-h-screen dark:text-white dark:bg-black">
       <h1 className="mb-3 pb-2 text-4xl font-semibold md:text-7xl">
         <span className="font-light">Have a look </span>Around!
@@ -78,22 +89,31 @@ const Dashboard = () => {
               ? `${channelData.length} Channels`
               : channelData?.length === 0
               ? "0 Channels "
-              : " 1 Channel"}
+              : " No Channels"}
           </div>
-          <div className="mb-2 text-lg text-gray-100">Available right now</div>
+          <div className="mb-2 text-lg text-gray-100">
+            {channelData?.length === 0
+              ? "Available right now"
+              : "Join or Create one"}
+          </div>
         </div>
         <div className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-blue-600 py-2 text-white shadow md:w-1/3 md:py-8">
           <div className="mb-1 text-3xl font-semibold">4</div>
-          <div className="mb-1 text-lg text-gray-100">Friends All Hardcoded rn</div>
+          <div className="mb-1 text-lg text-gray-100">
+            Friends All Hardcoded rn
+          </div>
         </div>
 
-        <Dialog>
-          <DialogTrigger className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-white py-2 text-blue-600 shadow border-blue-600 hover:cursor-pointer border-2 md:w-1/3 md:py-8">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <div
+            className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-white py-2 text-blue-600 shadow border-blue-600 hover:cursor-pointer border-2 md:w-1/3 md:py-8"
+            onClick={() => setOpen(true)}
+          >
             <div>
               <div className="mb-1 text-4xl font-bold ">+</div>
               <div className="mb-1 text-lg text-blue-600">Create a Channel</div>
             </div>
-          </DialogTrigger>
+          </div>
           <DialogContent className={"text-black space-y-4"}>
             <p
               ref={errRef}
@@ -103,8 +123,10 @@ const Dashboard = () => {
               {errMsg}
             </p>
             <DialogHeader>
-              <DialogTitle>Create a New Channel</DialogTitle>
-              <DialogDescription className={"text-black"}>
+              <DialogTitle className={"text-black dark:text-white"}>
+                Create a New Channel
+              </DialogTitle>
+              <DialogDescription className={"text-black dark:text-white"}>
                 To create a new channel, enter the following details:
               </DialogDescription>
             </DialogHeader>
@@ -152,10 +174,13 @@ const Dashboard = () => {
                         addMember();
                       }
                     }}
-                    required
                     className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
                   />
-                  <Button variant={"secondary"} onClick={addMember}>
+                  <Button
+                    variant={"secondary"}
+                    type="button"
+                    onClick={addMember}
+                  >
                     <CirclePlus />
                   </Button>
                 </div>
