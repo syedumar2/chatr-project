@@ -32,24 +32,41 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [loading,setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !pwd) {
-      setErrMsg("Invalid Entry");
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  if (!email || !pwd) {
+    setErrMsg("Invalid Entry");
+    setLoading(false); // Ensure loading is reset
+    return;
+  }
+
+  try {
+    
     const res = await login(email, pwd);
+
     if (res.success) {
-      toast.loading("Logging in");
-      const redirect = () => navigate("/dashboard");
-      setTimeout(redirect,3000);
+      toast.success("Signed in successfully");
+      setTimeout(() => navigate("/dashboard"), 500);
+
     } else {
-      toast.error(res.message)
+
+      toast.error(res.message);
       setErrMsg(res.message);
       errRef.current?.focus();
     }
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error("Something went wrong. Please try again.");
+    setErrMsg("An unexpected error occurred.");
+    errRef.current?.focus();
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="relative flex items-center justify-center min-h-screen bg-blue-300 dark:bg-gray-800">
@@ -111,7 +128,7 @@ const SignIn = () => {
             <Button
               type="submit"
               variant="myButton"
-              disabled={!email || !pwd ? true : false}
+              disabled={!email || !pwd || loading ? true : false}
               className="w-full mt-4 bg-blue-600 dark:bg-blue-500 text-white"
             >
               Log in

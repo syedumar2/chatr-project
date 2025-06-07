@@ -24,4 +24,14 @@ router.patch(
   AuthMiddleware.verifyAccessToken,
   ChannelController.updateChannel
 );
+router.patch(
+  "/user",
+  AuthMiddleware.verifyAccessToken,
+  ChannelController.removeMemberFromChannel
+);
+router.patch(
+  "/members",
+  AuthMiddleware.verifyAccessToken,
+  ChannelController.updateChannelMember
+);
 module.exports = router;

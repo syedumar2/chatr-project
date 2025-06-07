@@ -1,5 +1,75 @@
 const { ChannelDao, UserDao } = require("../dao");
 
+const updateChannelMember = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const channelId = req.query.cid;
+    const { members = [] } = req.body;
+
+    if (!channelId || members.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Both channel ID and members are required.",
+      });
+    }
+    const channel = await ChannelDao.getChannel({ _id: channelId });
+
+    if (!channel || channel.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Channel not found.",
+      });
+    }
+
+    // Ensure only the creator can update members
+    if (String(channel[0].createdBy) !== String(userId)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the creator can remove members.",
+      });
+    }
+
+    //Creator check
+    //on success retrieve creator email
+    const creator = await UserDao.getUser({ _id: userId });
+    if (!creator || creator.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Creator not found." });
+    }
+
+    //conv members to lower case and club it with creator email
+    const memberEmails = Array.from(
+      new Set([...members.map((e) => e.toLowerCase()), creator[0].email])
+    );
+
+    const users = await UserDao.getUser({ email: { $in: memberEmails } });
+    // Check if all provided emails exist:
+    if (users.length !== memberEmails.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Some provided emails are invalid.",
+      });
+    }
+
+    const memberIds = users.map((user) => user._id);
+
+    const updatedChannel = await ChannelDao.updateChannelMembers(
+      channelId,
+      memberIds
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Channel members updated successfully.",
+      data: updatedChannel,
+    });
+  } catch (error) {
+    console.error("Error in updateChannelMember", error);
+    res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
 const addChannel = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -215,14 +285,69 @@ const updateChannel = async (req, res) => {
   }
 };
 
+const removeMemberFromChannel = async (req, res) => {
+  try {
+    const userId = req.user.id; // the requester (must be channel creator)
+    const channelId = req.query.cid;
+    const { memberId } = req.body;
+
+    if (!channelId || !memberId) {
+      return res.status(400).json({
+        success: false,
+        message: "Both channel ID and member ID are required.",
+      });
+    }
+
+    const channel = await ChannelDao.getChannel({ _id: channelId });
+
+    if (!channel || channel.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Channel not found.",
+      });
+    }
+
+    // Ensure only the creator can remove members
+    if (String(channel[0].createdBy) !== String(userId)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the creator can remove members.",
+      });
+    }
+
+    // Prevent removing the creator themselves
+    if (String(channel[0].createdBy) === String(memberId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot remove the channel creator.",
+      });
+    }
+
+    // Remove the member from the members array
+    const updatedChannel = await ChannelDao.updateChannel(
+      { _id: channelId },
+      { $pull: { members: memberId } }
+    );
+
+    return res.json({
+      success: true,
+      message: "Member removed successfully.",
+      data: updatedChannel,
+    });
+  } catch (error) {
+    console.error("Error in removeMemberFromChannel", error);
+    res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
 //UPDATE CHANNEL TESTED AND WORKING ✅
 
 module.exports = {
   addChannel, //✅
   getChannel, //✅
-  getChannelsUserBelongsTo,  //✅
+  getChannelsUserBelongsTo, //✅
   updateChannel, //✅
   deleteChannel, //✅
+  removeMemberFromChannel,
+  updateChannelMember,
 };
-
-

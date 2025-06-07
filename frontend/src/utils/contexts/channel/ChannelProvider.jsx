@@ -13,10 +13,11 @@ const ChannelProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res?.data.success) {
-        return setChannelData(res?.data?.channels);
+        setChannelData(res?.data?.channels);
+
         // return { success: true, channels: res.data?.channels }; //for testing remove later
       } else {
-        return { success: true, message: res.data.message };
+        return { success: false, message: res.data.message };
       }
     } catch (error) {
       if (error.response?.data?.message) {
@@ -50,9 +51,62 @@ const ChannelProvider = ({ children }) => {
     }
   };
 
+  const updateChannel = async (channelId, name, description) => {
+    try {
+      const res = await channelApi.patch(`/?cid=${channelId}`, {
+        name,
+        description,
+
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (res?.data.success) {
+        
+        return { success: true, message: "Channel updated successfully" };
+      } else {
+        return { success: false, message: res.data.message };
+      }
+    } catch (error) {
+      
+      if (error.response?.data?.message) {
+        return { success: false, message: error?.response?.data.message };
+      } else {
+        return { success: false, message: "An unexpected error occurred." };
+      }
+    }
+  };
+
+  const updateChannelMembers = async (channelId, members) => {
+    try {
+      const res = await channelApi.patch(
+        `/members?cid=${channelId}`,
+        {
+          members: members
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (res?.data.success) {
+        return {
+          success: true,
+          message: "Channel members updated successfully",
+        };
+      } else {
+        return { success: false, message: res.data.message };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update members.",
+      };
+    }
+  };
+
   return (
     <ChannelContext.Provider
-      value={{ getChannelData, channelData, createChannel }}
+      value={{ getChannelData, channelData, createChannel, updateChannel, updateChannelMembers }}
     >
       {children}
     </ChannelContext.Provider>

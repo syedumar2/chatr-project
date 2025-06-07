@@ -5,7 +5,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -19,11 +18,11 @@ import { CirclePlus } from "lucide-react";
 import { toast } from "sonner";
 
 const Dashboard = () => {
- 
   const { channelData, getChannelData, createChannel } =
     useContext(ChannelContext);
 
   const [members, setMembers] = useState([]);
+
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -33,18 +32,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       await getChannelData();
-
     };
     fetchData();
   }, []);
-
-  // Add member on Enter or button click
-  const addMember = () => {
-    if (email.trim() && !members.includes(email.trim())) {
-      setMembers([...members, email.trim()]);
-      setEmail("");
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,7 +49,7 @@ const Dashboard = () => {
       setOpen(false);
       getChannelData();
     } else {
-      toast.error(`Error: ${res.message}` )
+      toast.error(`Error: ${res.message}`);
       setErrMsg(res.message);
       errRef.current?.focus();
       //TODO remove errRef and errMsg later
@@ -69,9 +59,15 @@ const Dashboard = () => {
   const removeMember = (emailToRemove) => {
     setMembers(members.filter((m) => m !== emailToRemove));
   };
+  // Add member on Enter or button click
+  const addMember = () => {
+    if (email.trim() && !members.includes(email.trim())) {
+      setMembers([...members, email.trim()]);
+      setEmail("");
+    }
+  };
 
   return (
-    
     <div className="mx-auto my-10 bg-white text-black px-2 py-20 text-center min-h-screen dark:text-white dark:bg-black">
       <h1 className="mb-3 pb-2 text-4xl font-semibold md:text-7xl">
         <span className="font-light">Have a look </span>Around!

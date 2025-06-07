@@ -5,6 +5,7 @@ import api from "../../axios";
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
   //load token from localStorage on app load
@@ -44,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 
       setAccessToken(null);
       setUser(null);
+      setUserId(null);
       return { success: true, message: res.data.message };
     } catch (error) {
       console.log(error);
@@ -84,6 +86,7 @@ export const AuthProvider = ({ children }) => {
       });
       if (res.data.success) {
         setUser(res.data.data.email);
+        setUserId(res.data.data._id);
         return { success: true, userData: res.data.data };
       }
     } catch (err) {
@@ -96,6 +99,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         accessToken,
         user,
+        userId,
         login,
         logout,
         fetchUserData,

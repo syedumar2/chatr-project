@@ -157,6 +157,7 @@ const getProtectedData = async (req, res) => {
     res.json({
       success: true,
       data: {
+        _id: user._id,
         fullname: user.name,
         email: user.email,
         message: "Get Protected Data route hit",
@@ -179,7 +180,6 @@ const issueNewTokens = async (req, res) => {
     const newAccessToken = generateAccessToken(userId);
     const newCookieToken = generateRefreshToken(userId);
 
- 
     res.cookie("refreshToken", newCookieToken, {
       httpOnly: true,
       secure: false,
