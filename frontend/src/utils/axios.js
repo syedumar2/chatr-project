@@ -11,6 +11,10 @@ export const channelApi = axios.create({
   withCredentials: true, //sends cookies
 });
 
+export const messageApi = axios.create({
+  baseURL: "http://localhost:3000/api/message",
+  withCredentials: true, //sends cookies
+})
 // Interceptor: Automatically refresh token on 401
 
 // Attach response interceptor
