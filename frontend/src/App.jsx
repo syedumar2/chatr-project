@@ -9,30 +9,31 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import Dashboard from "./components/screens/dashboard/Dashboard";
 import Profile from "./components/screens/profile/Profile";
 import ChannelProvider from "./utils/contexts/channel/ChannelProvider";
-
+import MessageProvider from "./utils/contexts/message/messageProvider";
 import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
 import Channel from "./components/screens/channels/Channel";
-
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <ChannelProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<ProtectedRoutes />}>
-                <Route element={<Dashboard />} path="/dashboard" />
-                <Route element={<Profile />} path="/profile" />
-                <Route element={<Channel/>} path = "/channel/:channelId" />
-              </Route>
+          <MessageProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<ProtectedRoutes />}>
+                  <Route element={<Dashboard />} path="/dashboard" />
+                  <Route element={<Profile />} path="/profile" />
+                  <Route element={<Channel />} path="/channel/:channelId" />
+                </Route>
 
-              <Route element={<SignIn />} path="/signin" />
-              <Route element={<SignUp />} path="/signup" />
-              <Route element={<Home />} path="/" />
-            </Routes>
-          </BrowserRouter>
+                <Route element={<SignIn />} path="/signin" />
+                <Route element={<SignUp />} path="/signup" />
+                <Route element={<Home />} path="/" />
+              </Routes>
+            </BrowserRouter>
+          </MessageProvider>
         </ChannelProvider>
       </AuthProvider>
     </ThemeProvider>

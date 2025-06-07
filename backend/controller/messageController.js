@@ -3,6 +3,7 @@ const { MessageDao } = require("../dao");
 const sendMessage = async (req, res) => {
   try {
     const userId = req.user.id;
+
     const { content, channel } = req.body;
     if (!content || !channel) {
       return res.status(200).json({
@@ -10,11 +11,13 @@ const sendMessage = async (req, res) => {
         message: "Empty input! No operation performed",
       });
     }
+
     const message = await MessageDao.addMessage({
       sender: userId,
       content,
       channel,
     });
+    console.log("result of db operation".message);
 
     return res.json({
       success: true,

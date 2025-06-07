@@ -16,10 +16,11 @@ const logger = require("./middleware/logger");
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend origin
-    credentials: true, // allow cookies
+    origin: ["http://localhost:5173", "http://192.168.1.5:5173"], // Your frontend URL on LAN
+    credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 

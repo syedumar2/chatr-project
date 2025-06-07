@@ -2,7 +2,12 @@ const { MessageModel } = require("../models");
 
 const addMessage = async (messageData) => {
   try {
-    return await MessageModel.create(messageData);
+    const message = await MessageModel.create(messageData);
+
+    // Step 2: Populate the `sender` field (select only needed fields)
+    await message.populate("sender", "_id name email");
+
+    return message;
   } catch (error) {
     throw error;
     console.log(error);

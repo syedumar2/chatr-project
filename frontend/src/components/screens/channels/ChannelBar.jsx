@@ -58,7 +58,8 @@ export const ChannelBar = ({
       <SheetTrigger asChild>
         <Button
           variant="blue"
-          className="fixed top-[60px] right-[-30px] hover:right-1 transition-all duration-300 z-50 rounded-xl"
+          className="fixed  top-[55px] right-[-1px] hover:right-1 transition-all duration-300 z-50 rounded"
+
         >
           <ChevronLeft />
         </Button>
