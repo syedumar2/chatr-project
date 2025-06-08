@@ -37,7 +37,7 @@ const MessageProvider = ({ children }) => {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         );
-        console.log("at postMessage context",res.data)
+    
         if (res?.data.success) {
           setMessages((prev) => [...prev, res.data.data]);
           return { success: true };
@@ -91,6 +91,7 @@ const MessageProvider = ({ children }) => {
           }
         );
         if (res?.data.success) {
+          //here is the update logic after update
           setMessages((prev) =>
             prev.map((msg) => (msg._id === messageId ? res.data.data : msg))
           );

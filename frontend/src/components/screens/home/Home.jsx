@@ -8,20 +8,17 @@ const Home = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="bg-blue-300 max-w-full dark:bg-gray-800 dark:text-white overflow-x-hidden">
+    <div className="bg-blue-300 dark:bg-gray-800 dark:text-white overflow-x-hidden">
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between gap-6 p-4 px-24 w-full h-14 bg-blue-900 dark:bg-gray-900">
+      <nav className="flex flex-wrap items-center justify-between gap-4 p-4 sm:px-6 md:px-12 lg:px-24 bg-blue-900 dark:bg-gray-900">
         <div className="flex items-center gap-4 text-xl">
-          {/* Icon container: white bg in light, gray-700 in dark */}
           <div className="bg-white dark:bg-gray-700 rounded-full p-2">
-            {/* Handshake icon: black in light, white in dark */}
             <Handshake className="w-6 h-6 text-black dark:text-white" />
           </div>
-          {/* “Chatr” text: white in both modes */}
           <span className="pixel-text text-white">Chatr</span>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {/* Theme toggle button */}
           <button
             onClick={toggleTheme}
@@ -30,16 +27,22 @@ const Home = () => {
             {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          {/* Login Button: make sure Link text is white in both modes */}
+          {/* Login Button */}
           <Link to="/signin">
-            <Button variant="myButton" className="bg-blue-900 dark:bg-blue-700">
+            <Button
+              variant="myButton"
+              className="bg-blue-900 dark:bg-blue-700 w-full sm:w-auto"
+            >
               <span className="text-white">Login</span>
             </Button>
           </Link>
 
-          {/* Register Button: adjust background/text for dark */}
+          {/* Register Button */}
           <Link to="/signup">
-            <Button variant="secondary" className="py-2 font-bold bg-white dark:bg-gray-700">
+            <Button
+              variant="secondary"
+              className="py-2 font-bold bg-white dark:bg-gray-700 w-full sm:w-auto"
+            >
               <span className="text-black dark:text-white">Register</span>
             </Button>
           </Link>
@@ -47,11 +50,11 @@ const Home = () => {
       </nav>
 
       {/* MAIN CONTENT */}
-      <div className="flex flex-col justify-center items-center min-h-screen px-4">
-        {/* “Chatr” Heading: black in light, white in dark */}
-        <h3 className="pixel-text text-8xl text-black dark:text-white">Chatr</h3>
+      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-56px)] px-4 text-center">
+        <h3 className="pixel-text text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-black dark:text-white">
+          Chatr
+        </h3>
 
-        {/* Subtitle: italic, gray-800 in light, gray-300 in dark */}
         <p className="mt-2 italic text-gray-800 dark:text-gray-300 font-bold">
           A Portfolio Project
         </p>

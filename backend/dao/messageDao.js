@@ -33,6 +33,7 @@ const updateMessage = async (query, messageData) => {
       new: true,
       runValidators: true,
     })
+      .populate("sender", "_id name email")
       .lean()
       .exec();
   } catch (error) {

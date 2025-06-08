@@ -22,13 +22,13 @@ const Dashboard = () => {
     useContext(ChannelContext);
 
   const [members, setMembers] = useState([]);
-
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
+
   useEffect(() => {
     const fetchData = async () => {
       await getChannelData();
@@ -42,6 +42,7 @@ const Dashboard = () => {
       setErrMsg("Invalid Entry");
       return;
     }
+
     const res = await createChannel(name, description, members);
 
     if (res.success) {
@@ -52,14 +53,9 @@ const Dashboard = () => {
       toast.error(`Error: ${res.message}`);
       setErrMsg(res.message);
       errRef.current?.focus();
-      //TODO remove errRef and errMsg later
     }
   };
 
-  const removeMember = (emailToRemove) => {
-    setMembers(members.filter((m) => m !== emailToRemove));
-  };
-  // Add member on Enter or button click
   const addMember = () => {
     if (email.trim() && !members.includes(email.trim())) {
       setMembers([...members, email.trim()]);
@@ -67,50 +63,55 @@ const Dashboard = () => {
     }
   };
 
+  const removeMember = (emailToRemove) => {
+    setMembers(members.filter((m) => m !== emailToRemove));
+  };
+
   return (
-    <div className="mx-auto my-10 bg-white text-black px-2 py-20 text-center min-h-screen dark:text-white dark:bg-black">
-      <h1 className="mb-3 pb-2 text-4xl font-semibold md:text-7xl">
+    <div className="mx-auto my-10 bg-white dark:bg-black text-black dark:text-white px-4 py-16 text-center min-h-screen ">
+      <h1 className="mb-4 text-3xl sm:text-4xl md:text-6xl font-semibold">
         <span className="font-light">Have a look </span>Around!
       </h1>
-      <p className="mb-3 font-light ">
+      <p className="mb-6 font-light text-base sm:text-lg">
         You can start by creating your first channel or by messaging in ones
         you've already been added to
       </p>
 
-      <hr className="mb-12 h-px border-0 opacity-25" />
-      <div className="mx-auto flex max-w-screen-lg flex-wrap md:flex-nowrap md:space-x-3 md:px-20">
-        <div className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-blue-600 py-2 text-white shadow md:w-1/3 md:py-8">
-          <div className="mb-1 text-3xl font-semibold">
+      <hr className="mb-10 h-px border-0 bg-gray-400 dark:bg-gray-700 opacity-25" />
+
+      <div className="mx-auto flex flex-col md:flex-row md:space-x-4 max-w-5xl">
+        <div className="mb-6 w-full rounded-lg bg-blue-600 py-6 px-4 text-white shadow">
+          <div className="mb-1 text-2xl sm:text-3xl font-semibold">
             {channelData?.length > 1
               ? `${channelData.length} Channels`
               : channelData?.length === 0
-              ? "0 Channels "
-              : " No Channels"}
+              ? "0 Channels"
+              : "No Channels"}
           </div>
-          <div className="mb-2 text-lg text-gray-100">
+          <div className="text-base sm:text-lg text-gray-100">
             {channelData?.length === 0
-              ? "Available right now"
-              : "Join or Create one"}
+              ? "Join or Create one"
+              : "Available right now"}
           </div>
         </div>
-        <div className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-blue-600 py-2 text-white shadow md:w-1/3 md:py-8">
-          <div className="mb-1 text-3xl font-semibold">4</div>
-          <div className="mb-1 text-lg text-gray-100">
+
+        <div className="mb-6 w-full rounded-lg bg-blue-600 py-6 px-4 text-white shadow">
+          <div className="mb-1 text-2xl sm:text-3xl font-semibold">4</div>
+          <div className="text-base sm:text-lg text-gray-100">
             Friends All Hardcoded rn
           </div>
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
           <div
-            className="mb-6 w-full max-w-full flex-shrink-0 rounded-lg bg-white py-2 text-blue-600 shadow border-blue-600 hover:cursor-pointer border-2 md:w-1/3 md:py-8"
+            className="mb-6 w-full rounded-lg bg-white border-2 border-blue-600 py-6 px-4 text-blue-600 shadow hover:cursor-pointer"
             onClick={() => setOpen(true)}
           >
-            <div>
-              <div className="mb-1 text-4xl font-bold ">+</div>
-              <div className="mb-1 text-lg text-blue-600">Create a Channel</div>
-            </div>
+            <div className="text-3xl font-bold">+</div>
+            <div className="text-base sm:text-lg">Create a Channel</div>
           </div>
-          <DialogContent className={"text-black space-y-4"}>
+
+          <DialogContent className="text-black dark:text-white space-y-4">
             <p
               ref={errRef}
               className={errMsg ? "text-red-500 text-sm mb-2" : "hidden"}
@@ -119,16 +120,15 @@ const Dashboard = () => {
               {errMsg}
             </p>
             <DialogHeader>
-              <DialogTitle className={"text-black dark:text-white"}>
-                Create a New Channel
-              </DialogTitle>
-              <DialogDescription className={"text-black dark:text-white"}>
+              <DialogTitle>Create a New Channel</DialogTitle>
+              <DialogDescription>
                 To create a new channel, enter the following details:
               </DialogDescription>
             </DialogHeader>
+
             <form className="space-y-4 mt-2" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <Label htmlFor="name" className="ml-1 dark:text-gray-200">
+              <div>
+                <Label htmlFor="name" className="ml-1">
                   Channel Name:
                 </Label>
                 <Input
@@ -138,10 +138,11 @@ const Dashboard = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                   className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
-                ></Input>
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="name" className="ml-1 dark:text-gray-200">
+
+              <div>
+                <Label htmlFor="description" className="ml-1">
                   Description:
                 </Label>
                 <Textarea
@@ -153,11 +154,11 @@ const Dashboard = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="name" className="ml-1 dark:text-gray-200">
-                  Members
+              <div>
+                <Label htmlFor="members" className="ml-1">
+                  Members:
                 </Label>
-                <div className="flex items-center gap-2 ">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Input
                     id="members"
                     type="email"
@@ -172,20 +173,16 @@ const Dashboard = () => {
                     }}
                     className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
                   />
-                  <Button
-                    variant={"secondary"}
-                    type="button"
-                    onClick={addMember}
-                  >
+                  <Button variant="secondary" type="button" onClick={addMember}>
                     <CirclePlus />
                   </Button>
                 </div>
 
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap mt-2">
                   {members.map((member) => (
                     <div
                       key={member}
-                      className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-sm"
+                      className="inline-flex items-center gap-1 rounded-full bg-gray-200 dark:bg-gray-700 px-3 py-1 text-sm text-black dark:text-white"
                     >
                       {member}
                       <button
@@ -201,18 +198,14 @@ const Dashboard = () => {
               </div>
 
               <DialogFooter>
-                <div className="w-full flex items-center justify-between">
+                <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-2">
                   <DialogClose asChild>
                     <Button variant="default">Cancel</Button>
                   </DialogClose>
                   <Button
                     type="submit"
                     variant="blue"
-                    disabled={
-                      !name || !description || members.length === 0
-                        ? true
-                        : false
-                    }
+                    disabled={!name || !description || members.length === 0}
                   >
                     Add Channel
                   </Button>

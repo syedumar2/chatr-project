@@ -98,8 +98,8 @@ const Channel = () => {
     <div className="flex justify-center items-center h-screen">
       <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
-  ) : (
-    <div className="flex flex-col h-screen">
+  ) : (<>
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
       <ChannelBar
         open={open}
         setOpen={setOpen}
@@ -120,24 +120,28 @@ const Channel = () => {
         setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}
         creatorEmail={creatorEmail}
       />
+
+      {/* Floating Button */}
       <Button
         onClick={() => getMessage(channelId)}
-        className="bg-green-700 fixed top-[350px] right-[-15px] hover:right-1 transition-all duration-300 z-50 rounded-xl"
+        className="bg-green-700 fixed top-[350px] right-2 sm:right-4 z-50 rounded-xl"
       >
         <CirclePlus />
       </Button>
 
       {/* Messages */}
-      <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-18 bg-gray-100 dark:bg-black">
-        {/* Incoming Message */}
-
+      <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
         <MessageList channelId={channelId} />
-        {/* Outgoing Message */}
       </div>
 
       {/* Input Box */}
-      <MessageInput channelId={channelId} />
+     
     </div>
+     <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
+        <MessageInput channelId={channelId} />
+      </div>
+      </>
+
   );
 };
 
