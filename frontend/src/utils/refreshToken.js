@@ -3,12 +3,12 @@ import api, { messageApi } from "./axios";
 import { channelApi } from "./axios";
 
 export default async function refreshToken() {
-  const localhost = "http://localhost:3000/";
-  const lan = "http://192.168.1.5:3000/";
+  const baseUrl = import.meta.env.VITE_DEV_URL;
+
   //use for testing lan
 
   const res = await axios.post(
-    `${localhost}api/auth/refresh`,
+    `${baseUrl}api/auth/refresh`,
     {},
     { withCredentials: true } // Include cookies if refresh token is in a cookie
   );

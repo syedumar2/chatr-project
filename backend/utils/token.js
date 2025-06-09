@@ -5,7 +5,7 @@ const generateAccessToken = (userId) => {
    
 
     return jwt.sign({ userId: userId }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "15m",
+      expiresIn: "60m",
     });
   } catch (error) {
     console.error("Error generating access token:", error.message);

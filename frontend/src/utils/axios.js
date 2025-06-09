@@ -2,23 +2,22 @@ import axios from "axios";
 
 import handle401Error from "./handle401";
 
-const localhost = "http://localhost:3000/";
-const lan = "http://192.168.1.5:3000/"
+const baseUrl = import.meta.env.VITE_DEV_URL
 //use for testing lan
 
 
 const api = axios.create({
-  baseURL: `${localhost}api/auth`,
+  baseURL: `${baseUrl}api/auth`,
   withCredentials: true, //sends cookies
 });
 
 export const channelApi = axios.create({
-  baseURL: `${localhost}api/channel`,
+  baseURL: `${baseUrl}api/channel`,
   withCredentials: true, //sends cookies
 });
 
 export const messageApi = axios.create({
-  baseURL: `${localhost}api/message`,
+  baseURL: `${baseUrl}api/message`,
   withCredentials: true, //sends cookies
 })
 // Interceptor: Automatically refresh token on 401

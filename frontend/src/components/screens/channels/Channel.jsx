@@ -21,7 +21,8 @@ const Channel = () => {
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
   const { userId } = useContext(AuthContext);
-  const { getMessage } = useContext(MessageContext);
+  const { getMessage, joinChannel, leaveChannel, socketConnected } =
+    useContext(MessageContext);
   const [thisChannelData, setThisChannelData] = useState("");
   const [loading, setLoading] = useState(true);
   const [channelName, setChannelName] = useState("");
@@ -31,9 +32,40 @@ const Channel = () => {
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [removeMemberDialogOpen, setRemoveMemberDialogOpen] = useState(false);
   const [creatorEmail, setCreatorEmail] = useState("");
+  const prevChannelIdRef = useRef(null);
 
   useEffect(() => {
-    getChannelData(); // just trigger it once
+    getChannelData();
+
+    if (socketConnected && channelId) {
+      // Leave the previous channel
+      if (prevChannelIdRef.current && prevChannelIdRef.current !== channelId) {
+        leaveChannel(prevChannelIdRef.current);
+      }
+
+      // Join the new channel
+      joinChannel(channelId);
+      prevChannelIdRef.current = channelId;
+
+      console.log("🔁 Switched to channel:", channelId);
+    }
+
+    return () => {
+      if (prevChannelIdRef.current) {
+        leaveChannel(prevChannelIdRef.current);
+        prevChannelIdRef.current = null;
+        console.log("💨 Cleanup: left channel", prevChannelIdRef.current);
+      }
+    };
+  }, [socketConnected, channelId]);
+
+  useEffect(() => {
+    if (!channelId) return;
+
+    // Leave the previous room when channelId changes
+    return () => {
+      leaveChannel(channelId);
+    };
   }, [channelId]);
 
   useEffect(() => {
@@ -98,50 +130,49 @@ const Channel = () => {
     <div className="flex justify-center items-center h-screen">
       <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
-  ) : (<>
-    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
-      <ChannelBar
-        open={open}
-        setOpen={setOpen}
-        channelData={thisChannelData}
-        userId={userId}
-        channelName={channelName}
-        setChannelName={setChannelName}
-        channelDescription={channelDescription}
-        setChannelDescription={setChannelDescription}
-        members={members}
-        setMembers={setMembers}
-        errRef={errRef}
-        errMsg={errMsg}
-        handleUpdate={handleUpdate}
-        memberDialogOpen={memberDialogOpen}
-        setMemberDialogOpen={setMemberDialogOpen}
-        removeMemberDialogOpen={removeMemberDialogOpen}
-        setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}
-        creatorEmail={creatorEmail}
-      />
+  ) : (
+    <>
+      <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
+        <ChannelBar
+          open={open}
+          setOpen={setOpen}
+          channelData={thisChannelData}
+          userId={userId}
+          channelName={channelName}
+          setChannelName={setChannelName}
+          channelDescription={channelDescription}
+          setChannelDescription={setChannelDescription}
+          members={members}
+          setMembers={setMembers}
+          errRef={errRef}
+          errMsg={errMsg}
+          handleUpdate={handleUpdate}
+          memberDialogOpen={memberDialogOpen}
+          setMemberDialogOpen={setMemberDialogOpen}
+          removeMemberDialogOpen={removeMemberDialogOpen}
+          setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}
+          creatorEmail={creatorEmail}
+        />
 
-      {/* Floating Button */}
-      <Button
-        onClick={() => getMessage(channelId)}
-        className="bg-green-700 fixed top-[350px] right-2 sm:right-4 z-50 rounded-xl"
-      >
-        <CirclePlus />
-      </Button>
+        {/* Floating Button */}
+        <Button
+          onClick={() => getMessage(channelId)}
+          className="bg-green-700 fixed top-[350px] right-2 sm:right-4 z-50 rounded-xl"
+        >
+          <CirclePlus />
+        </Button>
 
-      {/* Messages */}
-      <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-        <MessageList channelId={channelId} />
+        {/* Messages */}
+        <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
+          <MessageList channelId={channelId} />
+        </div>
+
+        {/* Input Box */}
       </div>
-
-      {/* Input Box */}
-     
-    </div>
-     <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
+      <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
         <MessageInput channelId={channelId} />
       </div>
-      </>
-
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useMemo } from "react";
+import { useState, useContext, useEffect, useMemo, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import MessageContext from "@/utils/contexts/message/messageContext";
@@ -17,8 +17,16 @@ import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
 
 const MessageList = ({ channelId }) => {
+    const messagesEndRef = useRef(null);
+
+  // Scroll to bottom whenever messages change
+
+
   const { messages, getMessage, postMessage, deleteMessage, updateMessage } =
     useContext(MessageContext);
+      useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   const { userId } = useContext(AuthContext);
 
   useEffect(() => {
@@ -28,7 +36,7 @@ const MessageList = ({ channelId }) => {
   const renderedMsgs = useMemo(() => {
     return messages.map((msg) => {
       const isOutgoing = msg.sender._id === userId;
-      console.log("result of msg.sender._id", msg.sender._id, "userId", userId);
+    
       //what is equal to userId is the outgoing message
       return (
         <div
@@ -111,6 +119,8 @@ const MessageList = ({ channelId }) => {
               </AvatarFallback>
             </Avatar>
           )}
+              <div ref={messagesEndRef} />
+          
         </div>
       );
     });
