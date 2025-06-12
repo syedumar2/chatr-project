@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema(
         ref: "channel",
       },
     ],
+    contacts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
     refreshTokens: [String],
   },
   {

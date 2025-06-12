@@ -16,6 +16,7 @@ import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import { Textarea } from "@/components/ui/textarea";
 import { CirclePlus } from "lucide-react";
 import { toast } from "sonner";
+import AuthContext from "@/utils/contexts/auth/AuthContext";
 
 const Dashboard = () => {
   const { channelData, getChannelData, createChannel } =
@@ -28,6 +29,7 @@ const Dashboard = () => {
   const [description, setDescription] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
+  const {user} = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,7 +84,7 @@ const Dashboard = () => {
       <div className="mx-auto flex flex-col md:flex-row md:space-x-4 max-w-5xl">
         <div className="mb-6 w-full rounded-lg bg-blue-600 py-6 px-4 text-white shadow">
           <div className="mb-1 text-2xl sm:text-3xl font-semibold">
-            {channelData?.length > 1
+            {channelData?.length >= 1
               ? `${channelData.length} Channels`
               : channelData?.length === 0
               ? "0 Channels"
@@ -96,9 +98,9 @@ const Dashboard = () => {
         </div>
 
         <div className="mb-6 w-full rounded-lg bg-blue-600 py-6 px-4 text-white shadow">
-          <div className="mb-1 text-2xl sm:text-3xl font-semibold">4</div>
+          <div className="mb-1 text-2xl sm:text-3xl font-semibold">{user?.contacts.length}</div>
           <div className="text-base sm:text-lg text-gray-100">
-            Friends All Hardcoded rn
+            Contacts
           </div>
         </div>
 

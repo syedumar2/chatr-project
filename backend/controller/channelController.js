@@ -6,10 +6,10 @@ const updateChannelMember = async (req, res) => {
     const channelId = req.query.cid;
     const { members = [] } = req.body;
 
-    if (!channelId || members.length === 0) {
+    if (!channelId) {
       return res.status(400).json({
         success: false,
-        message: "Both channel ID and members are required.",
+        message: "Channel ID is required.",
       });
     }
     const channel = await ChannelDao.getChannel({ _id: channelId });
@@ -291,10 +291,10 @@ const removeMemberFromChannel = async (req, res) => {
     const channelId = req.query.cid;
     const { memberId } = req.body;
 
-    if (!channelId || !memberId) {
+    if (!channelId) {
       return res.status(400).json({
         success: false,
-        message: "Both channel ID and member ID are required.",
+        message: "Channel ID required.",
       });
     }
 

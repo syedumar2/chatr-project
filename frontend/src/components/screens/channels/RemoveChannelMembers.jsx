@@ -27,6 +27,7 @@ export const RemoveChannelMembers = ({
   const initialEmails = members
     .map((m) => m.email)
     .filter((e) => e !== creatorEmail);
+
   const [emailList, setEmailList] = useState(initialEmails);
   const [markedForDelete, setMarkedForDelete] = useState([]);
   const { updateChannelMembers, getChannelData } = useContext(ChannelContext);

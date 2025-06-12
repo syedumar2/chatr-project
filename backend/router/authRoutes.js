@@ -19,5 +19,6 @@ router.patch(
   AuthController.updateUser
 );
 router.post("/refresh", AuthController.issueNewTokens);
+router.get("/users", AuthController.searchContacts);
 
 module.exports = router;

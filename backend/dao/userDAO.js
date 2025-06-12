@@ -14,7 +14,21 @@ const addUser = async (UserData) => {
 
 const getUser = async (query) => {
   try {
-    return await UserModel.find(query).lean().exec();
+    return await UserModel.find(query)
+      .populate("contacts", "name email")
+      .lean()
+      .exec();
+  } catch (error) {
+    throw error;
+    console.log(error);
+  }
+};
+
+const getUsers = async (query) => {
+  try {
+    return await UserModel.find({
+      email: { $regex: query, $options: "i" },
+    }).limit(10);
   } catch (error) {
     throw error;
     console.log(error);
@@ -23,10 +37,14 @@ const getUser = async (query) => {
 
 const updateUser = async (query, updateData) => {
   try {
-    return await UserModel.findOneAndUpdate(query, updateData, {
-      new: true,
-      runValidators: true,
-    })
+    return await UserModel.findOneAndUpdate(
+      query,
+      { $set: updateData },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
       .lean()
       .exec();
   } catch (error) {
@@ -66,4 +84,5 @@ module.exports = {
   getUser,
   addRefreshToken,
   removeRefreshToken,
+  getUsers,
 };

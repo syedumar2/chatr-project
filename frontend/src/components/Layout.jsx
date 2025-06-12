@@ -5,6 +5,7 @@ import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import { useNavigate } from "react-router-dom";
 import { Handshake, Moon, Sun, LoaderCircle } from "lucide-react";
 import { useTheme } from "../utils/contexts/theme/ThemeContext";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,31 +22,15 @@ const Layout = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { accessToken, fetchUserData, logout } = useContext(AuthContext);
+  const { accessToken, fetchUserData, logout,profile, user } = useContext(AuthContext);
   const { getChannelData } = useContext(ChannelContext);
   const [userData, setUserData] = useState("");
 
-  useEffect(() => {
-    const getData = async () => {
-      const res = await fetchUserData();
 
-      if (res?.success) {
-        setUserData(res.userData);
-      } else {
-        console.error(res?.message);
-      }
-    };
 
-    try {
-      setLoading(true);
-      getData();
-      getChannelData();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchUserData]);
+  useEffect(()=>{
+    console.log(user);
+  },[user])
 
   const logOut = async () => {
     const res = await logout();
@@ -89,9 +74,9 @@ const Layout = ({ children }) => {
               <DropdownMenuTrigger>
                 <Avatar className={"size-10"}>
                   <AvatarImage />
-                  {userData ? (
+                  {user ? (
                     <AvatarFallback className=" p-2 text-2xl bg-purple-600 ">
-                      {userData?.fullname?.charAt(0).toUpperCase()}
+                      {user?.name?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   ) : (
                     <AvatarFallback className="...">
@@ -105,16 +90,16 @@ const Layout = ({ children }) => {
                   My Account
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {userData ? (
+                {user ? (
                   <div className="bg-accent rounded p-2">
                     <div className="flex-col items-center px-2 py-2 text-sm ">
                       <p>
-                        <span> Name: {userData?.fullname} </span>{" "}
+                        <span> Name: {user?.name} </span>{" "}
                       </p>
                     </div>
                     <div className="flex-col items-center px-2 py-2 text-sm ">
                       <p>
-                        <span>Email: {userData?.email}</span>
+                        <span>Email: {user?.email}</span>
                       </p>
                     </div>
                   </div>
@@ -123,7 +108,7 @@ const Layout = ({ children }) => {
                 )}
 
                 <DropdownMenuItem className={"ml-1.5"}>
-                  Profile
+                  <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"

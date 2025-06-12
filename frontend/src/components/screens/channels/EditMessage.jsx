@@ -18,21 +18,24 @@ import { Input } from "@/components/ui/input";
 import MessageContext from "@/utils/contexts/message/messageContext";
 import { toast } from "sonner";
 
-const EditMessage = ({ msg }) => {
+const EditMessage = ({ msg, channelId }) => {
   const [open, setOpen] = useState(false);
   const [editedContent, setEditedContent] = useState(msg.content);
   const { updateMessage } = useContext(MessageContext);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const res = await updateMessage(msg._id, editedContent);
-    if (res?.success) {
-      toast.success("Message updated successfully");
-      setOpen(false);
-    } else {
-      toast.error(`Error: ${res.message}`);
-    }
-  };
+    const handleUpdate = async (e) => {
+      e.preventDefault();
+
+      const res = await updateMessage(msg._id, editedContent, channelId);
+      console.log(msg._id)
+      console.log(channelId);
+      if (res?.success) {
+        toast.success("Message updated successfully");
+        setOpen(false);
+      } else {
+        toast.error(`Error: ${res.message}`);
+      }
+    };
 
   return (
     <>
@@ -42,7 +45,7 @@ const EditMessage = ({ msg }) => {
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             Edit message
           </DropdownMenuItem>
-        </DialogTrigger>
+        </DialogTrigger>  
 
         <DialogContent className={"text-black dark:text-white space-y-4"}>
           <form onSubmit={handleUpdate} className="space-y-4">

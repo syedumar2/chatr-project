@@ -11,6 +11,19 @@ const {
 
 const SALT_ROUNDS = 10;
 
+const searchContacts = async (req, res) => {
+  const { q } = req.query;
+
+  if (!q) return res.status(400).json({ error: "Missing search query" });
+
+  try {
+    const users = await UserDao.getUsers(q);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err });
+  }
+};
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, pwd } = req.body;
@@ -54,7 +67,9 @@ const updateUser = async (req, res) => {
     if (updates.pwd) {
       const hashedPwd = await bcrypt.hash(updates.pwd, SALT_ROUNDS);
       updates.pwd = hashedPwd;
+
     }
+   
     const updatedUser = await UserDao.updateUser({ _id: userId }, updates);
     if (!updatedUser) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -158,8 +173,9 @@ const getProtectedData = async (req, res) => {
       success: true,
       data: {
         _id: user._id,
-        fullname: user.name,
+        name: user.name,
         email: user.email,
+        contacts: user.contacts,
         message: "Get Protected Data route hit",
       },
     });
@@ -208,4 +224,5 @@ module.exports = {
   logoutUser,
   getProtectedData,
   issueNewTokens,
+  searchContacts,
 };

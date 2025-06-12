@@ -1,16 +1,14 @@
 import { useEffect, useState, useContext } from "react";
 import {
-  Calendar,
   Home,
   Inbox,
-  Search,
-  Settings,
   CircleUser,
   Contact,
   ChevronDown,
   ChevronRight,
   Hash,
   UserPen,
+  Send,
 } from "lucide-react";
 import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 
@@ -25,14 +23,18 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import AuthContext from "@/utils/contexts/auth/AuthContext";
 
 const AppSidebar = () => {
   const [channelsOpen, setChannelsOpen] = useState(false);
+  const [dmOpen, setDmOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
   const { channelData, getChannelData } = useContext(ChannelContext);
+  const { user } = useContext(AuthContext);
 
   const toggleContacts = () => setContactsOpen(!contactsOpen);
   const toggleChannels = () => setChannelsOpen(!channelsOpen);
+  const toggleDm = () => setDmOpen(!dmOpen);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,10 +55,10 @@ const AppSidebar = () => {
               {/* Dashboard */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/dashboard" className="flex items-center gap-2">
+                  <Link to="/dashboard" className="flex items-center gap-2">
                     <Home />
                     <span>Dashboard</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -97,29 +99,37 @@ const AppSidebar = () => {
                   </div>
                 ) : (
                   <div className="ml-8 mt-1 space-y-1 text-sm">
-                    <a
-                      href="/channel/general"
-                      className="flex items-center gap-2 hover:underline"
-                    >
-                      <Hash size={16} />
-                      <span>general</span>
-                    </a>
-                    <a
-                      href="/channel/random"
-                      className="flex items-center gap-2 hover:underline"
-                    >
-                      <Hash size={16} />
-                      <span>random</span>
-                    </a>
-                    <a
-                      href="/channel/dev"
-                      className="flex items-center gap-2 hover:underline"
-                    >
-                      <Hash size={16} />
-                      <span>dev</span>
-                    </a>
+                    <Hash size={16} />
+                    <span>Server Fetch failed</span>
                   </div>
                 ))}
+              {/* Direct Messages collapsible */}
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={toggleDm}
+                  className="flex items-center justify-between w-full"
+                >
+                  <div className="flex items-center gap-2">
+                    <Send size={18} />
+                    <span>Direct Messages</span>
+                  </div>
+                  {channelsOpen ? (
+                    <ChevronDown size={16} />
+                  ) : (
+                    <ChevronRight size={16} />
+                  )}
+                </SidebarMenuButton>
+                {dmOpen && (
+                  <div className="ml-8 mt-1 space-y-1 text-sm">
+                    <div className="flex items-center gap-2 hover:underline">
+                      <Hash size={16} />
+                      Dummy Channel
+                    </div>
+                  </div>
+                )}
+              </SidebarMenuItem>
+
               {/* Contacts */}
 
               <SidebarMenuItem>
@@ -141,23 +151,26 @@ const AppSidebar = () => {
 
               {contactsOpen && (
                 <div className="ml-8 mt-1 space-y-1 text-sm">
-                  <div className="flex items-center gap-2 hover:underline">
-                    <CircleUser size={20} />
-                    <span>Random User 1</span>
-                  </div>
-                  <div className="flex items-center gap-2 hover:underline">
-                    <CircleUser size={20} />
-                    <span>Random User 2</span>
-                  </div>
+                  {user?.contacts?.map((u, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 hover:underline"
+                    >
+                      <CircleUser size={20} />
+                      <Link to={`/contact/${u?._id}`}>
+                        <span className="hover:cursor-pointer">{u?.name}</span>
+                      </Link>
+                    </div>
+                  ))}
                 </div>
               )}
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/profile" className="flex items-center gap-2">
+                  <Link to="/profile" className="flex items-center gap-2">
                     <UserPen size={18} />
                     <span>Profile</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

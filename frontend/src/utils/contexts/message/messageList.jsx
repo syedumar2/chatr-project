@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect, useMemo, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useParams } from "react-router-dom";
 
 import MessageContext from "@/utils/contexts/message/messageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
@@ -17,16 +16,14 @@ import {
 import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
 
-const MessageList = () => {
-    const { channelId } = useParams();
-    const messagesEndRef = useRef(null);
+const MessageList = ({ channelId }) => {
+  const messagesEndRef = useRef(null);
 
   // Scroll to bottom whenever messages change
 
-
   const { messages, getMessage, postMessage, deleteMessage, updateMessage } =
     useContext(MessageContext);
-      useEffect(() => {
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
   const { userId } = useContext(AuthContext);
@@ -38,7 +35,7 @@ const MessageList = () => {
   const renderedMsgs = useMemo(() => {
     return messages.map((msg) => {
       const isOutgoing = msg.sender._id === userId;
-    
+
       //what is equal to userId is the outgoing message
       return (
         <div
@@ -49,31 +46,31 @@ const MessageList = () => {
         >
           {/* Incoming msg avatar on the left replace in future with avatar */}
           {!isOutgoing && (
-             <DropdownMenu>
+            <DropdownMenu>
               <DropdownMenuTrigger>
-            <Avatar className={"size-10"}>
-              <AvatarImage />
+                <Avatar className={"size-10"}>
+                  <AvatarImage />
 
-              <AvatarFallback className=" p-2 text-2xl bg-cyan-700 ">
-                {msg?.sender?.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-             </DropdownMenuTrigger>
+                  <AvatarFallback className=" p-2 text-2xl bg-cyan-700 ">
+                    {msg?.sender?.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <div className="bg-accent rounded p-2">
-                    <div className="flex-col items-center px-2 py-2 text-sm ">
-                      <p>
-                        <span> Name: {msg?.sender?.name} </span>{" "}
-                      </p>
-                    </div>
-                    <div className="flex-col items-center px-2 py-2 text-sm ">
-                      <p>
-                        <span>Email: {msg?.sender?.email}</span>
-                      </p>
-                    </div>
+                  <div className="flex-col items-center px-2 py-2 text-sm ">
+                    <p>
+                      <span> Name: {msg?.sender?.name} </span>{" "}
+                    </p>
                   </div>
+                  <div className="flex-col items-center px-2 py-2 text-sm ">
+                    <p>
+                      <span>Email: {msg?.sender?.email}</span>
+                    </p>
+                  </div>
+                </div>
               </DropdownMenuContent>
-              </DropdownMenu>
+            </DropdownMenu>
           )}
 
           <div>
@@ -99,7 +96,7 @@ const MessageList = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="start">
                     <DropdownMenuGroup>
-                      <EditMessage msg={msg} channelId={channelId} />
+                      <EditMessage msg={msg} />
                       <DeleteMessage msg={msg} />
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -121,8 +118,7 @@ const MessageList = () => {
               </AvatarFallback>
             </Avatar>
           )}
-              <div ref={messagesEndRef} />
-          
+          <div ref={messagesEndRef} />
         </div>
       );
     });
