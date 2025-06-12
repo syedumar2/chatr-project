@@ -69,16 +69,13 @@ const MessageProvider = ({ children }) => {
     };
   }, [accessToken]);
 
-  //message Logger
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   // GET messages for a channel
   const getMessage = useCallback(async (channelId) => {
     try {
       const res = await messageApi.get(`/${channelId}`);
       if (res?.data.success) {
+      
         setMessages(res.data.data);
         return { success: true };
       } else {

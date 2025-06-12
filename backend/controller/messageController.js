@@ -11,6 +11,7 @@ const getMessages = async (req, res) => {
       });
     }
     const messagesArray = await MessageDao.getMessage({ channel: channelid }); // Oldest first
+ 
 
     return res.json({
       success: true,

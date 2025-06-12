@@ -70,6 +70,7 @@ const Channel = () => {
 
   useEffect(() => {
     if (channelData) {
+      console.log("Channel Data obtained", channelData)
       setLoading(true);
 
       const timer = setTimeout(() => {
@@ -164,7 +165,7 @@ const Channel = () => {
 
         {/* Messages */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList channelId={channelId} />
+          <MessageList  />
         </div>
 
         {/* Input Box */}

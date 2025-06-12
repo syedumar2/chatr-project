@@ -128,8 +128,8 @@ const Dashboard = () => {
               </DialogDescription>
             </DialogHeader>
 
-            <form className="space-y-4 mt-2" onSubmit={handleSubmit}>
-              <div>
+            <form className="space-y-4 " onSubmit={handleSubmit}>
+              
                 <Label htmlFor="name" className="ml-1">
                   Channel Name:
                 </Label>
@@ -141,9 +141,9 @@ const Dashboard = () => {
                   required
                   className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
                 />
-              </div>
+            
 
-              <div>
+              
                 <Label htmlFor="description" className="ml-1">
                   Description:
                 </Label>
@@ -154,9 +154,9 @@ const Dashboard = () => {
                   required
                   className="bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
                 />
-              </div>
+              
 
-              <div>
+              
                 <Label htmlFor="members" className="ml-1">
                   Members:
                 </Label>
@@ -178,7 +178,7 @@ const Dashboard = () => {
                   <Button variant="secondary" type="button" onClick={addMember}>
                     <CirclePlus />
                   </Button>
-                </div>
+                
 
                 <div className="flex gap-2 flex-wrap mt-2">
                   {members.map((member) => (
