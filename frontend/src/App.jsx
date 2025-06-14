@@ -14,6 +14,7 @@ import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
 import Channel from "./components/screens/channels/Channel";
 import Contact from "./components/screens/contact/Contact";
+import DmChannel from "./components/screens/dm-channels/DmChannel";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                   <Route element={<Profile />} path="/profile" />
                   <Route element={<Channel />} path="/channel/:channelId" />
                   <Route element={<Contact />} path="/contact/:id" />
+                  <Route element = {<DmChannel/>} path="/channel/dm/:dmChannelId"/>
                 </Route>
 
                 <Route element={<SignIn />} path="/signin" />

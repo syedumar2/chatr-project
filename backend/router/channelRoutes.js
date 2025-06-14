@@ -15,7 +15,7 @@ router.get(
   ChannelController.getChannelsUserBelongsTo
 );
 router.delete(
-  "/",
+  "/:cid",
   AuthMiddleware.verifyAccessToken,
   ChannelController.deleteChannel
 );
@@ -33,5 +33,10 @@ router.patch(
   "/members",
   AuthMiddleware.verifyAccessToken,
   ChannelController.updateChannelMember
+);
+router.post(
+  "/dm/:id",
+  AuthMiddleware.verifyAccessToken,
+  ChannelController.dmChannel
 );
 module.exports = router;

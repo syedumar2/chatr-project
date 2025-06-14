@@ -70,6 +70,54 @@ const updateChannelMember = async (req, res) => {
   }
 };
 
+const dmChannel = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const memberId = req.params.id;
+
+    if (!memberId) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Input",
+      });
+    }
+    const channelMembersId = Array.from(new Set([memberId, userId]));
+
+    const existingChannel = await ChannelDao.getChannel({
+      isGroup: false,
+      members: channelMembersId,
+    });
+    console.log("existing channel details", existingChannel);
+    if (existingChannel.length > 0) {
+      return res
+        .status(409)
+        .json({ success: false, message: "Channel already exists" });
+    }
+
+    console.log(channelMembersId);
+    const channel = await ChannelDao.addChannel({
+      name: `dm-${channelMembersId[0]}-${channelMembersId[1]}`,
+      isGroup: false,
+      members: channelMembersId,
+      createdBy: userId,
+    });
+    return res.json({
+      success: true,
+      message: "Channel creation successful",
+      data: {
+        id: channel._id,
+        name: channel.name,
+        members: channel.members,
+        createdBy: channel.createdBy,
+        createdAt: channel.createdAt,
+      },
+    });
+  } catch (error) {
+    console.log("Error at dmChannel: ", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 const addChannel = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -121,6 +169,7 @@ const addChannel = async (req, res) => {
     const newChannel = await ChannelDao.addChannel({
       name,
       description,
+      isGroup: true,
       members: memberIds,
       createdBy: userId,
     });
@@ -192,7 +241,8 @@ const getChannelsUserBelongsTo = async (req, res) => {
 const deleteChannel = async (req, res) => {
   try {
     const userId = req.user.id;
-    const channelId = req.query.cid;
+    console.log("at delete channel this is what we r getting", req.params.cid);
+    const channelId = req.params.cid;
 
     if (!channelId) {
       return res
@@ -350,4 +400,5 @@ module.exports = {
   deleteChannel, //✅
   removeMemberFromChannel,
   updateChannelMember,
+  dmChannel,
 };

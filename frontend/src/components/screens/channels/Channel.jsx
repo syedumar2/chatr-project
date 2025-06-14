@@ -32,6 +32,7 @@ const Channel = () => {
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [removeMemberDialogOpen, setRemoveMemberDialogOpen] = useState(false);
   const [creatorEmail, setCreatorEmail] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const prevChannelIdRef = useRef(null);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const Channel = () => {
 
   useEffect(() => {
     if (channelData) {
-      console.log("Channel Data obtained", channelData)
+      console.log("Channel Data obtained", channelData);
       setLoading(true);
 
       const timer = setTimeout(() => {
@@ -135,6 +136,7 @@ const Channel = () => {
     <>
       <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
         <ChannelBar
+          channelId={channelId}
           open={open}
           setOpen={setOpen}
           channelData={thisChannelData}
@@ -153,6 +155,8 @@ const Channel = () => {
           removeMemberDialogOpen={removeMemberDialogOpen}
           setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}
           creatorEmail={creatorEmail}
+          deleteDialogOpen={deleteDialogOpen}
+          setDeleteDialogOpen={setDeleteDialogOpen}
         />
 
         {/* Floating Button */}
@@ -165,7 +169,7 @@ const Channel = () => {
 
         {/* Messages */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList  />
+          <MessageList />
         </div>
 
         {/* Input Box */}

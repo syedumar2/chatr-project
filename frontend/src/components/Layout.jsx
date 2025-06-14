@@ -28,10 +28,6 @@ const Layout = ({ children }) => {
 
 
 
-  useEffect(()=>{
-    console.log(user);
-  },[user])
-
   const logOut = async () => {
     const res = await logout();
     if (res.success) {

@@ -29,7 +29,8 @@ const AppSidebar = () => {
   const [channelsOpen, setChannelsOpen] = useState(false);
   const [dmOpen, setDmOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
-  const { channelData, getChannelData } = useContext(ChannelContext);
+  const { channelData, getChannelData, dmChannelData } =
+    useContext(ChannelContext);
   const { user } = useContext(AuthContext);
 
   const toggleContacts = () => setContactsOpen(!contactsOpen);
@@ -41,6 +42,7 @@ const AppSidebar = () => {
       await getChannelData();
     };
     fetchData();
+  
   }, []);
 
   return (
@@ -122,10 +124,22 @@ const AppSidebar = () => {
                 </SidebarMenuButton>
                 {dmOpen && (
                   <div className="ml-8 mt-1 space-y-1 text-sm">
-                    <div className="flex items-center gap-2 hover:underline">
-                      <Hash size={16} />
-                      Dummy Channel
-                    </div>
+                    {dmChannelData ? (
+                      dmChannelData.map((channel) => (
+                        <div
+                          className="flex items-center gap-2 hover:underline"
+                          key={channel._id}
+                        >
+                          <Send size={16} />
+                          <Link to={`/channel/dm/${channel._id}`}>{channel.members.find(u=> u._id !== user._id)?.name}</Link>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center gap-2 hover:underline">
+                        <Hash size={16} />
+                        <span>Dummy Channel</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </SidebarMenuItem>

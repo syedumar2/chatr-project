@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useMemo, useRef } from "react";
+import {  useContext, useEffect, useMemo, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useParams } from "react-router-dom";
 
@@ -15,7 +15,7 @@ import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
 
 const MessageList = () => {
-  const { channelId } = useParams();
+  const { dmChannelId } = useParams();
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom whenever messages change
@@ -28,8 +28,8 @@ const MessageList = () => {
   const { userId } = useContext(AuthContext);
 
   useEffect(() => {
-    getMessage(channelId);
-  }, [channelId]);
+    getMessage(dmChannelId);
+  }, [dmChannelId]);
 
   const renderedMsgs = useMemo(() => {
     return messages.map((msg) => {
@@ -95,7 +95,7 @@ const MessageList = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="start">
                     <DropdownMenuGroup>
-                      <EditMessage msg={msg} channelId={channelId} />
+                      <EditMessage msg={msg} dmChannelId={dmChannelId} />
                       <DeleteMessage msg={msg} />
                     </DropdownMenuGroup>
                   </DropdownMenuContent>

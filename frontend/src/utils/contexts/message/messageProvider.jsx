@@ -27,9 +27,7 @@ const MessageProvider = ({ children }) => {
       setSocketConnected(true);
     });
 
-    socket.on("welcome", (data) => {
-      console.log("🎉 Server says:", data); // should log: { message: "a new client connected" }
-    });
+ 
 
     socket.on("disconnect", () => {
       setSocketConnected(false);
@@ -101,7 +99,7 @@ const MessageProvider = ({ children }) => {
 
   const joinChannel = (channelId) => {
     if (!socketRef.current && !socketRef.current.connected) {
-      console.warn("❌ Socket not connected while trying to join:", channelId);
+      
       return;
     }
     socketRef.current.emit("joinChannel", channelId);
@@ -109,7 +107,7 @@ const MessageProvider = ({ children }) => {
 
   const leaveChannel = (channelId) => {
     if (!socketRef.current && !socketRef.current.connected) {
-      console.warn("❌ Socket not connected while trying to leave:", channelId);
+    
       return;
     }
     socketRef.current.emit("leaveChannel", channelId);

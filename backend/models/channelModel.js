@@ -9,13 +9,15 @@ const channelSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
-
+    },
+    isGroup: {
+      type: Boolean,
+      default: true,
     },
     members: [
       {

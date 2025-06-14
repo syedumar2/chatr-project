@@ -1,24 +1,48 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-
-
+import { Link } from "react-router-dom";
+import ChannelContext from "@/utils/contexts/channel/ChannelContext";
+import { toast } from "sonner";
 
 const Contact = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
+  const { createDmChannel, dmChannelData, getChannelData } = useContext(ChannelContext);
   const [contact, setContact] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && user.contacts) {
       const foundContact = user.contacts.find((u) => u._id === id);
       setContact(foundContact);
     }
+    console.log("user data appearing from server", user);
+    console.log("all dm channelData", dmChannelData);
   }, [user, id]);
+
+  const directMessage = async (memberId) => {
+    const existingChannel = dmChannelData.find((channel) =>
+      channel.members.some((member) => member._id === memberId)
+    );
+    if (existingChannel) {
+      navigate(`/channel/dm/${existingChannel._id}`);
+      return;
+    }
+
+    const res = await createDmChannel(memberId);
+    if (res.success) {
+      toast.success(res.message);
+      await getChannelData();
+      navigate(`/channel/dm/${res.data.id}`);
+    } else {
+      toast.error("Error", res.message);
+    }
+  };
 
   return (
     <div>
@@ -47,8 +71,10 @@ const Contact = () => {
               <Button
                 variant="blue"
                 className="w-full sm:w-md lg:w-xl md:w-lg h-12 text-2xl font-semibold p-4"
+                //when clicked this will either redirect to dm channel or create one
+                onClick={() => directMessage(contact._id)}
               >
-                <Send/>
+                <Send />
                 Direct Message
               </Button>
             </div>

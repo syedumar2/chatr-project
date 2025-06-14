@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useContext } from "react";
 import { Textarea } from "@/components/ui/textarea";
-
+import DeleteChannel from "./DeleteChannel";
 import {
   Dialog,
   DialogClose,
@@ -28,34 +29,22 @@ import {
 } from "@/components/ui/sheet";
 import { useRef, useState } from "react";
 import { CirclePlus } from "lucide-react";
-import { UpdateChannelDetails } from "./UpdateChannelDetails";
-import { AddChannelMembers } from "./AddChannelMembers";
-import { RemoveChannelMembers } from "./RemoveChannelMembers";
-import DeleteChannel from "./DeleteChannel";
+import AuthContext from "@/utils/contexts/auth/AuthContext";
 
 export const ChannelBar = ({
-  channelId,
-  members,
-  open,
-  setOpen,
-  channelData,
+  dmChannelId,
+
+  dmChannelData,
   userId,
-  channelName,
-  setChannelName,
-  channelDescription,
-  setChannelDescription,
-  errMsg,
-  errRef,
-  handleUpdate,
-  memberDialogOpen,
-  setMemberDialogOpen,
-  removeMemberDialogOpen,
-  setRemoveMemberDialogOpen,
-  creatorEmail,
+
   deleteDialogOpen,
   setDeleteDialogOpen,
+
+  errMsg,
+  errRef,
 }) => {
   const [email, setEmail] = useState("");
+  const { user } = useContext(AuthContext);
 
   return (
     <Sheet>
@@ -63,7 +52,6 @@ export const ChannelBar = ({
         <Button
           variant="blue"
           className="fixed  top-[55px] right-[-1px] hover:right-1 transition-all duration-300 z-50 rounded"
-
         >
           <ChevronLeft />
         </Button>
@@ -71,10 +59,10 @@ export const ChannelBar = ({
       <SheetContent className="bg-blue-900 text-white dark:text-white !max-w-[300px] dark:bg-gray-800">
         <SheetHeader>
           <SheetTitle className="font-medium  tracking-wide text-center text-white dark:text-white">
-            {channelData?.name}
+            {dmChannelData?.members.find((u) => u._id !== user._id)?.name}
           </SheetTitle>
           <SheetDescription className="text-center text-white dark:text-white">
-            {channelData?.members?.length} Members
+            {dmChannelData?.members?.length} Members
           </SheetDescription>
         </SheetHeader>
         <div className="mx-2 p-4 rounded-md bg-blue-800 dark:bg-zinc-900 shadow-md space-y-4 text-sm">
@@ -84,7 +72,7 @@ export const ChannelBar = ({
               Members
             </h3>
             <div className="flex flex-col space-y-1 overfl">
-              {channelData?.members?.map((member) => (
+              {dmChannelData?.members?.map((member) => (
                 <div
                   key={member._id}
                   className="flex items-center justify-between p-2 rounded-md hover:bg-blue-900 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
@@ -104,7 +92,7 @@ export const ChannelBar = ({
                   </div>
 
                   {/* Right side: admin label */}
-                  {channelData?.createdBy === member._id && (
+                  {dmChannelData?.createdBy === member._id && (
                     <span className="text-xs font-semibold text-white bg-blue-600 px-2 py-0.5 rounded-full">
                       Creator
                     </span>
@@ -115,55 +103,23 @@ export const ChannelBar = ({
           </div>
 
           {/* Section: Description */}
-          {channelData?.description && (
-            <div className="bg-blue-900 dark:bg-zinc-800 p-3 rounded-md">
-              <h4 className="text-xs font-semibold text-white dark:text-gray-300 mb-1 uppercase tracking-wide">
-                Channel Description
-              </h4>
-              <p className="text-sm text-gray-200 dark:text-gray-100">
-                {channelData.description}
-              </p>
-            </div>
-          )}
-
-          {/* TODO Section (Commented) */}
-          {/* Create functions like add members, delete channel, edit name/description/members */}
+          <div className="bg-blue-900 dark:bg-zinc-800 p-3 rounded-md">
+            <h4 className="text-xs font-semibold text-white dark:text-gray-300 mb-1 uppercase tracking-wide">
+              Channel Description
+            </h4>
+            <p className="text-sm text-gray-200 dark:text-gray-100">
+              DM Channel
+            </p>
+          </div>
         </div>
 
         <SheetFooter>
-          {channelData?.createdBy === userId ? (
+          {dmChannelData?.createdBy === userId ? (
             <>
-              <UpdateChannelDetails
-                open={open}
-                setOpen={setOpen}
-                channelName={channelName}
-                setChannelName={setChannelName}
-                channelDescription={channelDescription}
-                setChannelDescription={setChannelDescription}
-                errMsg={errMsg}
-                errRef={errRef}
-                handleUpdate={handleUpdate}
-              />
-              <AddChannelMembers
-                members={members}
-                membersDialogOpen={memberDialogOpen}
-                setMembersDialogOpen={setMemberDialogOpen}
-                errRef={errRef}
-                errMsg={errMsg}
-              />
-              <RemoveChannelMembers
-                members={members}
-                removeMemberDialogOpen={removeMemberDialogOpen}
-                setRemoveMemberDialogOpen={setRemoveMemberDialogOpen}
-                errRef={errRef}
-                errMsg={errMsg}
-                creatorEmail={creatorEmail}
-              />
               <DeleteChannel
-              channelId={channelId}
-              deleteDialogOpen={deleteDialogOpen}
-              setDeleteDialogOpen={setDeleteDialogOpen}
-              
+                dmChannelId={dmChannelId}
+                deleteDialogOpen={deleteDialogOpen}
+                setDeleteDialogOpen={setDeleteDialogOpen}
               />
             </>
           ) : (
@@ -173,6 +129,8 @@ export const ChannelBar = ({
             <Button variant="default">Close</Button>
           </SheetClose>
         </SheetFooter>
+        {/* TODO Section (Commented) */}
+        {/* Create functions like add members, delete channel, edit name/description/members */}
       </SheetContent>
     </Sheet>
   );
