@@ -12,7 +12,7 @@ const initMessageSocket = (socket, io) => {
   });
 
   // Handle message sending
-  socket.on("sendMessage", async ({ content, channel }) => {
+  socket.on("sendMessage", async ({ content, channel, replyMessageId }) => {
     if (!content?.trim() || !channel) {
       return socket.emit("error", {
         message: "Content and channel are required.",
@@ -24,6 +24,8 @@ const initMessageSocket = (socket, io) => {
         sender: socket.user,
         content: content.trim(),
         channel,
+     
+        replyTo : replyMessageId,
       });
 
       // Emit to all users in the channel

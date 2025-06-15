@@ -7,19 +7,12 @@ import { Send, SendHorizonal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 export const MessageInput = ({ dmChannelId }) => {
   const [inputField, setInputField] = useState("");
-  const {
-    messages,
-    setMessages,
-    getMessage,
-    postMessage,
-    deleteMessage,
-    updateMessage,
-  } = useContext(MessageContext);
+  const { postMessage } = useContext(MessageContext);
   const { userId } = useContext(AuthContext);
 
   const handlePost = async (e) => {
     e.preventDefault();
-    const res = await postMessage(inputField, dmChannelId);
+    const res = await postMessage(inputField, dmChannelId,);
     if (res.success) {
       setInputField("");
       toast.success("Message sent Successfully");

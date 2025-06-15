@@ -33,7 +33,18 @@ const Channel = () => {
   const [removeMemberDialogOpen, setRemoveMemberDialogOpen] = useState(false);
   const [creatorEmail, setCreatorEmail] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const [replyMessage, setReplyMessage] = useState(null);
+
   const prevChannelIdRef = useRef(null);
+
+  const handleReplyMessage = (data) => {
+    setReplyMessage(data); // store it if needed
+    console.log("At parent", data); // use this instead of replyMessage
+  };
+  const clearReplyMessage = () => {
+    setReplyMessage(null);
+  };
 
   useEffect(() => {
     getChannelData();
@@ -169,13 +180,17 @@ const Channel = () => {
 
         {/* Messages */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList />
+          <MessageList onReplyMessageSend={handleReplyMessage} />
         </div>
 
         {/* Input Box */}
       </div>
       <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
-        <MessageInput channelId={channelId} />
+        <MessageInput
+          channelId={channelId}
+          replyMessage={replyMessage}
+          clearReplyMessage={clearReplyMessage}
+        />
       </div>
     </>
   );

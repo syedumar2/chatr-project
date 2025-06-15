@@ -114,11 +114,11 @@ const MessageProvider = ({ children }) => {
   };
 
   // POST a new message
-  const postMessage = useCallback((content, channel) => {
+  const postMessage = useCallback((content, channel,  replyMessageId) => {
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }
-    socketRef.current.emit("sendMessage", { content, channel });
+    socketRef.current.emit("sendMessage", { content, channel, replyMessageId });
     return { success: true };
   }, []);
 

@@ -16,6 +16,16 @@ const messageSchema = new mongoose.Schema(
       ref: "channel",
       required: true,
     },
+    files: [
+      {
+        fileUrl: String,
+        fileType: String,
+      },
+    ],
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "message",
+    },
   },
   {
     timestamps: true,
