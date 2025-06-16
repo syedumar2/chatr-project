@@ -15,7 +15,7 @@ import AuthContext from "@/utils/contexts/auth/AuthContext";
 import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
 
-const MessageList = ({ onReplyMessageSend }) => {
+const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
   const { channelId } = useParams();
   const messagesEndRef = useRef(null);
   const { messages, getMessage } = useContext(MessageContext);
@@ -28,6 +28,7 @@ const MessageList = ({ onReplyMessageSend }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    console.log(messages);
   }, [messages]);
 
   const renderedMessages = useMemo(() => {
@@ -48,12 +49,17 @@ const MessageList = ({ onReplyMessageSend }) => {
           {!isOutgoing && (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Avatar className="size-10">
-                  <AvatarImage />
-                  <AvatarFallback className="bg-cyan-700 p-2 text-2xl">
-                    {msg?.sender?.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="size-10">
+                    <AvatarImage />
+                    <AvatarFallback className="bg-cyan-700 p-2 text-2xl">
+                      {msg?.sender?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {onlineUsersMap.get(msg?.sender?._id) === "online" && (
+                    <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2  bg-green-500" />
+                  )}
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <div className="rounded bg-accent p-2">

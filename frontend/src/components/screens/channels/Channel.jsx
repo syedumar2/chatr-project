@@ -3,12 +3,11 @@ import { ChannelBar } from "./ChannelBar";
 import { Button } from "@/components/ui/button";
 import { MessageInput } from "./MessageInput";
 import {
-  ChevronLeft,
+
   CirclePlus,
-  CircleUser,
-  DivideCircle,
+
 } from "lucide-react";
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef,useMemo } from "react";
 import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { toast } from "sonner";
@@ -37,6 +36,14 @@ const Channel = () => {
   const [replyMessage, setReplyMessage] = useState(null);
 
   const prevChannelIdRef = useRef(null);
+  const { onlineUsers } = useContext(MessageContext);
+  const onlineUsersMap = useMemo(() => {
+    const map = new Map();
+    onlineUsers.forEach(({ userId, status }) => {
+      map.set(userId, status);
+    });
+    return map;
+  }, [onlineUsers]);
 
   const handleReplyMessage = (data) => {
     setReplyMessage(data); // store it if needed
@@ -164,6 +171,7 @@ const Channel = () => {
           creatorEmail={creatorEmail}
           deleteDialogOpen={deleteDialogOpen}
           setDeleteDialogOpen={setDeleteDialogOpen}
+          onlineUsersMap={onlineUsersMap}
         />
 
         {/* Floating Button */}
@@ -176,7 +184,8 @@ const Channel = () => {
 
         {/* Messages */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList onReplyMessageSend={handleReplyMessage} />
+          <MessageList onReplyMessageSend={handleReplyMessage}
+          onlineUsersMap={onlineUsersMap} />
         </div>
 
         {/* Input Box */}

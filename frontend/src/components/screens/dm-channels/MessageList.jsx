@@ -14,7 +14,7 @@ import {
 import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
 
-const MessageList = () => {
+const MessageList = ({onlineUsersMap}) => {
   const { dmChannelId } = useParams();
   const messagesEndRef = useRef(null);
 
@@ -47,13 +47,17 @@ const MessageList = () => {
           {!isOutgoing && (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Avatar className={"size-10"}>
-                  <AvatarImage />
-
-                  <AvatarFallback className=" p-2 text-2xl bg-cyan-700 ">
-                    {msg?.sender?.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="size-10">
+                    <AvatarImage />
+                    <AvatarFallback className="bg-cyan-700 p-2 text-2xl">
+                      {msg?.sender?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {onlineUsersMap.get(msg?.sender?._id) === "online" && (
+                    <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2  bg-green-500" />
+                  )}
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <div className="bg-accent rounded p-2">

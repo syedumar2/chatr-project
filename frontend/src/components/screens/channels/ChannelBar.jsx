@@ -42,16 +42,9 @@ export const ChannelBar = ({
   creatorEmail,
   deleteDialogOpen,
   setDeleteDialogOpen,
+  onlineUsersMap,
 }) => {
   const [email, setEmail] = useState("");
-  const { onlineUsers } = useContext(MessageContext);
-  const onlineUsersMap = useMemo(() => {
-    const map = new Map();
-    onlineUsers.forEach(({ userId, status }) => {
-      map.set(userId, status);
-    });
-    return map;
-  }, [onlineUsers]);
 
   return (
     <Sheet>
