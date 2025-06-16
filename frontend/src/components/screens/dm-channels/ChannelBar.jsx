@@ -27,9 +27,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useRef, useState } from "react";
-import { CirclePlus } from "lucide-react";
+import { useMemo, useState } from "react";
+
 import AuthContext from "@/utils/contexts/auth/AuthContext";
+import MessageContext from "../../../utils/contexts/message/messageContext";
 
 export const ChannelBar = ({
   dmChannelId,
@@ -39,12 +40,17 @@ export const ChannelBar = ({
 
   deleteDialogOpen,
   setDeleteDialogOpen,
-
-  errMsg,
-  errRef,
 }) => {
   const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
+  const { onlineUsers } = useContext(MessageContext);
+  const onlineUsersMap = useMemo(() => {
+    const map = new Map();
+    onlineUsers.forEach(({ userId, status }) => {
+      map.set(userId, status);
+    });
+    return map;
+  }, [onlineUsers]);
 
   return (
     <Sheet>
@@ -79,24 +85,38 @@ export const ChannelBar = ({
                 >
                   {/* Left side: icon + name */}
                   <div className="flex items-center gap-3">
-                    <Avatar className={"size-10"}>
-                      <AvatarImage />
+                    <div className="relative">
+                      <Avatar className={"size-10"}>
+                        <AvatarImage />
+                        <AvatarFallback className="p-2 text-2xl bg-cyan-700">
+                          {member.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* Online dot indicator */}
 
-                      <AvatarFallback className=" p-2 text-2xl bg-cyan-700 ">
-                        {member.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="text-white dark:text-white font-medium">
-                      {member.name}
-                    </p>
+                      {onlineUsersMap.get(member._id) === "online" && (
+                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-blue-900 bg-green-500" />
+                      )}
+                    </div>
+
+                    <div className="flex flex-col">
+                      <p className="text-white dark:text-white font-medium">
+                        {member.name}
+                      </p>
+                      {/* Optional: label */}
+                      <span
+                        className={`text-xs ${
+                          onlineUsersMap.get(member._id) === "online"
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {onlineUsersMap.get(member._id) === "online"
+                          ? "Online"
+                          : "Offline"}
+                      </span>
+                    </div>
                   </div>
-
-                  {/* Right side: admin label */}
-                  {dmChannelData?.createdBy === member._id && (
-                    <span className="text-xs font-semibold text-white bg-blue-600 px-2 py-0.5 rounded-full">
-                      Creator
-                    </span>
-                  )}
                 </div>
               ))}
             </div>

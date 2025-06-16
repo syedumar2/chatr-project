@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useParams } from "react-router-dom";
 
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { ChevronDown } from "lucide-react";
 import {

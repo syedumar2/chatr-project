@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
         ref: "channel",
       },
     ],
+    status: {
+        type: String,
+        enum: ['online', 'offline', 'busy'],
+        default: 'offline'
+    },
     contacts: [
       {
         type: mongoose.Schema.Types.ObjectId,

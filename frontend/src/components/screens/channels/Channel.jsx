@@ -13,7 +13,7 @@ import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { toast } from "sonner";
 import MessageList from "./MessageList";
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 const Channel = () => {
   const { channelId } = useParams();
   const { channelData, getChannelData, updateChannel } =
@@ -85,30 +85,26 @@ const Channel = () => {
       console.log("Channel Data obtained", channelData);
       setLoading(true);
 
-      const timer = setTimeout(() => {
-        try {
-          const thisChannel = channelData.find((ch) => ch._id === channelId);
+      try {
+        const thisChannel = channelData.find((ch) => ch._id === channelId);
 
-          setThisChannelData(thisChannel);
-          setChannelName(thisChannel?.name);
-          setChannelDescription(thisChannel?.description);
+        setThisChannelData(thisChannel);
+        setChannelName(thisChannel?.name);
+        setChannelDescription(thisChannel?.description);
 
-          const theseMembers = thisChannel?.members || [];
-          setMembers(theseMembers);
+        const theseMembers = thisChannel?.members || [];
+        setMembers(theseMembers);
 
-          const creator = theseMembers.find(
-            (member) => member._id === thisChannel?.createdBy
-          );
-          setCreatorEmail(creator?.email);
-          console.log("Creator Email:", creator?.email);
-        } catch (error) {
-          console.error("Error loading channel:", error);
-        } finally {
-          setLoading(false);
-        }
-      }, 500); // 500ms delay for loading effect
-
-      return () => clearTimeout(timer);
+        const creator = theseMembers.find(
+          (member) => member._id === thisChannel?.createdBy
+        );
+        setCreatorEmail(creator?.email);
+        console.log("Creator Email:", creator?.email);
+      } catch (error) {
+        console.error("Error loading channel:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   }, [channelData, channelId]);
   // only runs when channelData updates

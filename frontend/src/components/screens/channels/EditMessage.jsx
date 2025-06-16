@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 import { toast } from "sonner";
 
 const EditMessage = ({ msg, channelId }) => {

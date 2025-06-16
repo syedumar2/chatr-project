@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Send, SendHorizonal } from "lucide-react";

@@ -1,14 +1,32 @@
-const { MessageDao, ChannelDao } = require("../dao");
+const { MessageDao, ChannelDao, UserDao } = require("../dao");
 
 const initMessageSocket = (socket, io) => {
   // Join channel room
   socket.on("joinChannel", (channel) => {
-    socket.join(channel);
+    try {
+      socket.join(channel);
+      const setOnline = UserDao.updateUser({_id: socket.user}, { status: "online" });
+      if (!setOnline) {
+        return socket.emit("error", { messsage: "User not found" });
+      }
+      io.emit("userStatusOnline", { userId: socket.user, status: "online" });
+    } catch (error) {
+      socket.emit("error", { message: "Internal server error" });
+    }
   });
 
   // Leave channel room
   socket.on("leaveChannel", (channel) => {
-    socket.leave(channel);
+    try {
+      socket.leave(channel);
+      const setOffline = UserDao.updateUser({_id: socket.user}, { status: "offline" });
+      if (!setOffline) {
+        return socket.emit("error", "User not found");
+      }
+      io.emit("userStatusOffline", { userId: socket.user, status: "offline" });
+    } catch (error) {
+      socket.emit("error", { message: "Internal server error" });
+    }
   });
 
   // Handle message sending
@@ -24,8 +42,8 @@ const initMessageSocket = (socket, io) => {
         sender: socket.user,
         content: content.trim(),
         channel,
-     
-        replyTo : replyMessageId,
+
+        replyTo: replyMessageId,
       });
 
       // Emit to all users in the channel
@@ -66,7 +84,7 @@ const initMessageSocket = (socket, io) => {
         { _id: messageid },
         { content: content }
       );
-     
+
       io.in(channel).emit("updatedMessage", result);
     } catch (error) {
       socket.emit("error", { message: "Failed to edit message." });
@@ -94,7 +112,7 @@ const initMessageSocket = (socket, io) => {
         });
       }
       const result = await MessageDao.deleteMessage({ _id: messageid });
-    
+
       if (result.deletedCount === 0) {
         return socket.emit("error", {
           message: "Message not found or already deleted",
@@ -102,7 +120,7 @@ const initMessageSocket = (socket, io) => {
       }
       const channel = String(message[0].channel);
 
-      io.in(channel).emit("deletedMessage",  result );
+      io.in(channel).emit("deletedMessage", result);
     } catch (error) {
       socket.emit("error", { message: "Failed to delete message." });
     }

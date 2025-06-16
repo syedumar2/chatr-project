@@ -1,21 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import { ChevronLeft, CircleUser, DivideCircle } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -26,12 +13,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useRef, useState } from "react";
-import { CirclePlus } from "lucide-react";
+import { useContext, useMemo, useState } from "react";
+
 import { UpdateChannelDetails } from "./UpdateChannelDetails";
 import { AddChannelMembers } from "./AddChannelMembers";
 import { RemoveChannelMembers } from "./RemoveChannelMembers";
 import DeleteChannel from "./DeleteChannel";
+import MessageContext from "@/utils/contexts/message/messageContext";
 
 export const ChannelBar = ({
   channelId,
@@ -56,6 +44,14 @@ export const ChannelBar = ({
   setDeleteDialogOpen,
 }) => {
   const [email, setEmail] = useState("");
+  const { onlineUsers } = useContext(MessageContext);
+  const onlineUsersMap = useMemo(() => {
+    const map = new Map();
+    onlineUsers.forEach(({ userId, status }) => {
+      map.set(userId, status);
+    });
+    return map;
+  }, [onlineUsers]);
 
   return (
     <Sheet>
@@ -63,7 +59,6 @@ export const ChannelBar = ({
         <Button
           variant="blue"
           className="fixed  top-[55px] right-[-1px] hover:right-1 transition-all duration-300 z-50 rounded"
-
         >
           <ChevronLeft />
         </Button>
@@ -91,16 +86,37 @@ export const ChannelBar = ({
                 >
                   {/* Left side: icon + name */}
                   <div className="flex items-center gap-3">
-                    <Avatar className={"size-10"}>
-                      <AvatarImage />
+                    <div className="relative">
+                      <Avatar className={"size-10"}>
+                        <AvatarImage />
+                        <AvatarFallback className="p-2 text-2xl bg-cyan-700">
+                          {member.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* Online dot indicator */}
 
-                      <AvatarFallback className=" p-2 text-2xl bg-cyan-700 ">
-                        {member.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="text-white dark:text-white font-medium">
-                      {member.name}
-                    </p>
+                      {onlineUsersMap.get(member._id) === "online" && (
+                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-blue-900 bg-green-500" />
+                      )}
+                    </div>
+
+                    <div className="flex flex-col">
+                      <p className="text-white dark:text-white font-medium">
+                        {member.name}
+                      </p>
+                      {/* Optional: label */}
+                      <span
+                        className={`text-xs ${
+                          onlineUsersMap.get(member._id) === "online"
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {onlineUsersMap.get(member._id) === "online"
+                          ? "Online"
+                          : "Offline"}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Right side: admin label */}
@@ -160,10 +176,9 @@ export const ChannelBar = ({
                 creatorEmail={creatorEmail}
               />
               <DeleteChannel
-              channelId={channelId}
-              deleteDialogOpen={deleteDialogOpen}
-              setDeleteDialogOpen={setDeleteDialogOpen}
-              
+                channelId={channelId}
+                deleteDialogOpen={deleteDialogOpen}
+                setDeleteDialogOpen={setDeleteDialogOpen}
               />
             </>
           ) : (

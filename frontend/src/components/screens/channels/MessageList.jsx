@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";

@@ -2,7 +2,7 @@ import { useState, useContext, useCallback, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { messageApi } from "@/utils/axios";
 import AuthContext from "../auth/AuthContext";
-import MessageContext from "./messageContext";
+import MessageContext from "./MessageContext";
 import { toast } from "sonner";
 
 const MessageProvider = ({ children }) => {
@@ -10,6 +10,7 @@ const MessageProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
   const [socketConnected, setSocketConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -27,12 +28,21 @@ const MessageProvider = ({ children }) => {
       setSocketConnected(true);
     });
 
- 
-
     socket.on("disconnect", () => {
       setSocketConnected(false);
     });
 
+    socket.on("userStatusOnline", (data) => {
+      console.log("at userStatusOnline socket recieved", data); //redact after testing
+      setOnlineUsers((prev) => [...prev, data]);
+    });
+
+    socket.on("userStatusOffline", (data) => {
+      console.log("at userStatusOffline socket recieved", data); //redact after testing
+      setOnlineUsers((prev) =>
+        prev.filter((user) => user.userId !== data.userId)
+      );
+    });
     //Message Events
     socket.on("newMessage", (message) => {
       setMessages((prev) => [...prev, message]);
@@ -67,13 +77,11 @@ const MessageProvider = ({ children }) => {
     };
   }, [accessToken]);
 
-
   // GET messages for a channel
   const getMessage = useCallback(async (channelId) => {
     try {
       const res = await messageApi.get(`/${channelId}`);
       if (res?.data.success) {
-      
         setMessages(res.data.data);
         return { success: true };
       } else {
@@ -99,7 +107,6 @@ const MessageProvider = ({ children }) => {
 
   const joinChannel = (channelId) => {
     if (!socketRef.current && !socketRef.current.connected) {
-      
       return;
     }
     socketRef.current.emit("joinChannel", channelId);
@@ -107,14 +114,13 @@ const MessageProvider = ({ children }) => {
 
   const leaveChannel = (channelId) => {
     if (!socketRef.current && !socketRef.current.connected) {
-    
       return;
     }
     socketRef.current.emit("leaveChannel", channelId);
   };
 
   // POST a new message
-  const postMessage = useCallback((content, channel,  replyMessageId) => {
+  const postMessage = useCallback((content, channel, replyMessageId) => {
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }
@@ -144,6 +150,7 @@ const MessageProvider = ({ children }) => {
         socketConnected,
         joinChannel,
         leaveChannel,
+        onlineUsers,
       }}
     >
       {children}

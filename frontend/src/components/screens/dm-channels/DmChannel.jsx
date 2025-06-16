@@ -8,7 +8,7 @@ import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { toast } from "sonner";
 import MessageList from "./MessageList";
-import MessageContext from "@/utils/contexts/message/messageContext";
+import MessageContext from "@/utils/contexts/message/MessageContext";
 const Channel = () => {
   const { dmChannelId } = useParams();
   const { dmChannelData, getChannelData, updateChannel } =

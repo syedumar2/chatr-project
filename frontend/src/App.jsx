@@ -9,7 +9,7 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import Dashboard from "./components/screens/dashboard/Dashboard";
 import Profile from "./components/screens/profile/Profile";
 import ChannelProvider from "./utils/contexts/channel/ChannelProvider";
-import MessageProvider from "./utils/contexts/message/messageProvider";
+import MessageProvider from "./utils/contexts/message/MessageProvider";
 import AuthProvider from "./utils/contexts/auth/AuthProvider";
 import ThemeProvider from "./utils/contexts/theme/ThemeProvider";
 import Channel from "./components/screens/channels/Channel";

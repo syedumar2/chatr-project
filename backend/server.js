@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
 
   MessageSocket.initMessageSocket(socket, io);
 
-  socket.emit("welcome", { message: `A new user ${socket.user} connected` });
+  socket.emit("welcome", { message: `A new user ${socket.user} connected` }); //should redact this later
 
   socket.on("disconnect", () => {
     console.log(`❌ Socket disconnected: ${socket.id}`);
