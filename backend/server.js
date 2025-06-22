@@ -1,19 +1,31 @@
+// 📦 Load Environment Variables
 require("dotenv").config();
+
+// 🧱 Core Modules and Middleware
+const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-require("./db-config"); // Connect to DB
+const path = require("path");
 
+// 🛠 Custom Modules
+require("./db-config"); // MongoDB Connection
+const logger = require("./middleware/logger");
 const { MessageSocket } = require("./sockets");
+const {
+  MasterRouter,
+  AuthRouter,
+  ChannelRoutes,
+  MessageRoutes,
+} = require("./router");
 
-const express = require("express");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-
+// 🚀 Express & HTTP Setup
 const app = express();
+const { createServer } = require("http");
 const httpServer = createServer(app);
 
-// Setup socket.io server
+// ⚡ Socket.IO Setup
+const { Server } = require("socket.io");
 const io = new Server(httpServer, {
   cors: {
     origin: ["http://localhost:5173"],
@@ -23,7 +35,7 @@ const io = new Server(httpServer, {
   },
 });
 
-// Middleware to authenticate socket with JWT
+// 🔐 Authenticate Socket Connections using JWT
 io.use((socket, next) => {
   const authHeader = socket.handshake.auth?.token;
 
@@ -35,61 +47,49 @@ io.use((socket, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log("✅ Decoded token:", decoded);
     socket.user = decoded.userId;
     next();
   } catch (err) {
-    console.error("❌ Token verification failed:", err.message);
+    console.error("❌ Socket auth failed:", err.message);
     next(new Error("Authentication failed"));
   }
 });
 
-// Socket connection handler
+// 🎧 Socket.IO Event Handling
 io.on("connection", (socket) => {
   console.log(`⚡ New socket connected: ${socket.id} (user: ${socket.user})`);
 
   MessageSocket.initMessageSocket(socket, io);
 
-  socket.emit("welcome", { message: `A new user ${socket.user} connected` }); //should redact this later
+  socket.emit("welcome", {
+    message: `User ${socket.user} connected`, // Consider removing in production
+  });
 
   socket.on("disconnect", () => {
     console.log(`❌ Socket disconnected: ${socket.id}`);
   });
 });
 
-// Import and mount routers
-const {
-  MasterRouter,
-  AuthRouter,
-  ChannelRoutes,
-  MessageRoutes,
-} = require("./router");
-const logger = require("./middleware/logger");
-
-// Express middleware
-app.use(
-  cors({
-    origin: ["http://localhost:5173"],
-    credentials: true,
-  })
-);
+// 🧩 Express Middleware
+app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-// app.use(logger);
+// app.use(logger); // Enable when needed
 
-// API routes
+// 🛣 API Routes
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/user", MasterRouter);
 app.use("/api/auth", AuthRouter);
 app.use("/api/channel", ChannelRoutes);
 app.use("/api/message", MessageRoutes);
 
-// Health check route
+// 🩺 Health Check Route
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "Server is up and running" });
+  res.json({ success: true, message: "Server is up and running ✅" });
 });
 
-// Start server
+// 🚀 Start the Server
 const PORT = process.env.PORT || 3500;
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Example app listening on port ${PORT}`);
+  console.log(`🌐 Server listening on http://localhost:${PORT}`);
 });
