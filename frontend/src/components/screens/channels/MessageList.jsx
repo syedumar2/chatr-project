@@ -1,7 +1,8 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useParams } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Download, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,18 +10,26 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 
 import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import EditMessage from "./EditMessage";
 import DeleteMessage from "./DeleteMessage";
+import { Button } from "@/components/ui/button";
 
 const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
   const { channelId } = useParams();
   const messagesEndRef = useRef(null);
   const { messages, getMessage } = useContext(MessageContext);
   const { userId } = useContext(AuthContext);
-  const [replyMessageChild, setReplyMessageChild] = useState(null);
+  const [previewFile, setPreviewFile] = useState(null);
 
   useEffect(() => {
     getMessage(channelId);
@@ -28,7 +37,6 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log(messages);
   }, [messages]);
 
   const renderedMessages = useMemo(() => {
@@ -82,6 +90,120 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
 
           {/* Message bubble */}
           <div>
+            {msg.files?.map((file, idx) => {
+              const url = `${import.meta.env.VITE_FILES_URL}${file.fileUrl}`;
+              const type = file.fileType;
+
+              const isImage = type?.startsWith("image/");
+              const isPDF = type === "application/pdf";
+              const isDocx =
+                type ===
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+              const isExcel =
+                type ===
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+              if (isImage) {
+                return (
+                  <div
+                    key={idx}
+                    className="max-w-xs my-2 rounded-xl overflow-hidden shadow-md bg-gray-600 "
+                  >
+                    <img
+                      src={url}
+                      alt="sent-img"
+                      className="rounded-xl object-cover max-h-60 w-full cursor-pointer"
+                      onClick={() => setPreviewFile({ url, type })}
+                    />
+                    <a
+                      href={url}
+                      target="_blank"
+                      download
+                      className="block text-sm text-white  text-center py-2"
+                    >
+                      Download Image
+                    </a>
+                  </div>
+                );
+              }
+
+              if (isPDF) {
+                return (
+                  <div
+                    key={idx}
+                    className="bg-red-100 text-sm p-2 rounded-lg max-w-xs mb-2"
+                  >
+                    <div
+                      onClick={() => setPreviewFile({ url, type })}
+                      className="cursor-pointer flex gap-4 ml-2 items-center  text-red-700 font-semibold hover:underline"
+                    >
+                     <FileText/> Preview PDF
+                    </div>
+                    <a
+                      href={url}
+                      target="_blank"
+                      download
+                      className="block text-sm text-red-700  text-center pt-2 "
+                    >
+                      Download PDF
+                    </a>
+                  </div>
+                );
+              }
+
+              if (isDocx) {
+                return (
+                  <div
+                    key={idx}
+                    className="bg-blue-50 p-2 rounded-lg max-w-xs mb-2"
+                  >
+                    <a
+                      href={url}
+                      target="_blank"
+                      download
+                      className="block text-sm mt-2 text-blue-600 underline text-center"
+                    >
+                      Download DOCX
+                    </a>
+                  </div>
+                );
+              }
+
+              if (isExcel) {
+                return (
+                  <div
+                    key={idx}
+                    className="bg-green-50 p-2 rounded-lg max-w-xs mb-2"
+                  >
+                    <a
+                      href={url}
+                      target="_blank"
+                      download
+                      className="block text-sm mt-2 text-blue-600 underline text-center"
+                    >
+                      Download Excel Sheet
+                    </a>
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={idx}
+                  className="bg-gray-100 p-2 rounded-lg max-w-xs mb-2"
+                >
+                 <a
+                      href={url}
+                      target="_blank"
+                      download
+                      className="block text-sm mt-2 text-blue-600 underline mb-2 text-center"
+                    >
+                      Download File
+                    </a>
+                </div>
+              );
+            })}
+
             <div
               className={`p-3 text-sm ${
                 isOutgoing
@@ -99,6 +221,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                   </div>
                 )}
               </div>
+
               <div className="flex items-center gap-1">
                 <p>{msg.content}</p>
                 <DropdownMenu>
@@ -119,7 +242,6 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                     ) : (
                       <DropdownMenuItem
                         onClick={() => {
-                          setReplyMessageChild(msg);
                           onReplyMessageSend(msg);
                         }}
                       >
@@ -151,12 +273,51 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
     });
   }, [messages, userId]);
 
-  return messages.length > 0 ? (
-    <div className="space-y-2">{renderedMessages}</div>
-  ) : (
-    <div className="font-semibold text-black dark:text-white">
-      No messages in this channel
-    </div>
+  return (
+    <>
+      {messages.length > 0 ? (
+        <div className="space-y-2">{renderedMessages}</div>
+      ) : (
+        <div className="font-semibold text-black dark:text-white">
+          No messages in this channel
+        </div>
+      )}
+
+      <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
+        <DialogContent className="flex justify-center my-auto w-full  flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-base text-center font-semibold">
+              File Preview
+            </DialogTitle>
+          </DialogHeader>
+
+          {previewFile?.type?.startsWith("image/") && (
+            <img
+              src={previewFile.url}
+              alt="preview"
+              className="max-w-full max-h-[70vh] object-contain rounded"
+            />
+          )}
+
+          {previewFile?.type === "application/pdf" && (
+            <iframe
+              src={previewFile.url}
+              title="PDF"
+              className="max-w-full h-[70vh] border rounded"
+            />
+          )}
+
+          <Link
+            href={previewFile?.url}
+            target="_blank"
+            download
+            className="block text-sm mt-2 text-blue-600 underline text-center"
+          >
+           <Button variant={"blue"}> <Download/> Download</Button> 
+          </Link>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

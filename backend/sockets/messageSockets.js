@@ -2,10 +2,14 @@ const { MessageDao, ChannelDao, UserDao } = require("../dao");
 
 const initMessageSocket = (socket, io) => {
   // Join channel room
-  socket.on("joinChannel", (channel) => {
+  socket.on("joinChannel", async (channel) => {
     try {
       socket.join(channel);
-      const setOnline = UserDao.updateUser({_id: socket.user}, { status: "online" });
+      const setOnline = await UserDao.updateUser(
+        { _id: socket.user },
+        { status: "online" }
+      );
+      console.log("This user is ", setOnline);
       if (!setOnline) {
         return socket.emit("error", { messsage: "User not found" });
       }
@@ -16,10 +20,13 @@ const initMessageSocket = (socket, io) => {
   });
 
   // Leave channel room
-  socket.on("leaveChannel", (channel) => {
+  socket.on("leaveChannel", async (channel) => {
     try {
       socket.leave(channel);
-      const setOffline = UserDao.updateUser({_id: socket.user}, { status: "offline" });
+      const setOffline = await UserDao.updateUser(
+        { _id: socket.user },
+        { status: "offline" }
+      );
       if (!setOffline) {
         return socket.emit("error", "User not found");
       }

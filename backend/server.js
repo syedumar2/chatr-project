@@ -1,4 +1,4 @@
-// 📦 Load Environment Variables
+//  Load Environment Variables
 require("dotenv").config();
 
 // 🧱 Core Modules and Middleware
@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
-// 🛠 Custom Modules
+//  Custom Modules
 require("./db-config"); // MongoDB Connection
 const logger = require("./middleware/logger");
 const { MessageSocket } = require("./sockets");
@@ -19,7 +19,7 @@ const {
   MessageRoutes,
 } = require("./router");
 
-// 🚀 Express & HTTP Setup
+//  Express & HTTP Setup
 const app = express();
 const { createServer } = require("http");
 const httpServer = createServer(app);
@@ -35,7 +35,7 @@ const io = new Server(httpServer, {
   },
 });
 
-// 🔐 Authenticate Socket Connections using JWT
+//  Authenticate Socket Connections using JWT
 io.use((socket, next) => {
   const authHeader = socket.handshake.auth?.token;
 

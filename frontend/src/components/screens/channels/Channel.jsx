@@ -5,6 +5,7 @@ import { MessageInput } from "./MessageInput";
 import {
 
   CirclePlus,
+  Hash,
 
 } from "lucide-react";
 import { useState, useEffect, useContext, useRef,useMemo } from "react";
@@ -141,6 +142,9 @@ const Channel = () => {
     }
   };
 
+
+
+
   //get channel details for this channel
   return loading ? (
     <div className="flex justify-center items-center h-screen">
@@ -148,6 +152,9 @@ const Channel = () => {
     </div>
   ) : (
     <>
+     <div className="sticky top-0 bg-blue-900 py-6 dark:bg-gray-900 border-t border-black p-4 z-50">
+       <h2 className="flex items-center  gap-2 font-semibold ml-4 tracking-wide"><Hash  size={20}/>{channelName}</h2>
+     </div>
       <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
         <ChannelBar
           channelId={channelId}
@@ -190,13 +197,13 @@ const Channel = () => {
 
         {/* Input Box */}
       </div>
-      <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
+      <>
         <MessageInput
           channelId={channelId}
           replyMessage={replyMessage}
           clearReplyMessage={clearReplyMessage}
         />
-      </div>
+      </>
     </>
   );
 };

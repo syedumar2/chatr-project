@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { Input } from "@/components/ui/input";
-import { Send, X } from "lucide-react";
+import { PlusCircle, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const MessageInput = ({ channelId, replyMessage, clearReplyMessage }) => {
@@ -50,6 +50,7 @@ export const MessageInput = ({ channelId, replyMessage, clearReplyMessage }) => 
 
         {/* Message input and send/reply button */}
         <div className="flex items-center space-x-3">
+          <Button variant={"blue"} ><PlusCircle/></Button>
           <Input
             className="h-10 w-full rounded bg-white px-3 text-sm text-black placeholder-gray-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             type="text"
@@ -60,10 +61,10 @@ export const MessageInput = ({ channelId, replyMessage, clearReplyMessage }) => 
           <Button
             variant="blue"
             onClick={handlePost}
-            className="bg-white text-black hover:bg-gray-400 dark:bg-gray-800 dark:text-white"
+            className=" hover:bg-gray-400"
             size="lg"
           >
-            <Send />
+            <Send  />
           </Button>
         </div>
       </div>
