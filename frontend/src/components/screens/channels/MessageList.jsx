@@ -17,7 +17,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-
 import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import EditMessage from "./EditMessage";
@@ -37,6 +36,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    console.log("messages array", messages);
   }, [messages]);
 
   const renderedMessages = useMemo(() => {
@@ -93,6 +93,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
             {msg.files?.map((file, idx) => {
               const url = `${import.meta.env.VITE_FILES_URL}${file.fileUrl}`;
               const type = file.fileType;
+              const fileName = file.fileUrl.split("/")[2];
 
               const isImage = type?.startsWith("image/");
               const isPDF = type === "application/pdf";
@@ -107,8 +108,35 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                 return (
                   <div
                     key={idx}
-                    className="max-w-xs my-2 rounded-xl overflow-hidden shadow-md bg-gray-600 "
+                    className="max-w-xs my-2 rounded-xl relative  overflow-hidden shadow-md bg-gray-600 "
                   >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <ChevronDown
+                          size={20}
+                          color="black"
+                          className={` opacity-0 transition-opacity duration-200 hover:opacity-100 z-50  absolute top-3  right-3 ${
+                            !isOutgoing && "ml-1"
+                          }`}
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {isOutgoing ? (
+                          <DropdownMenuGroup>
+                            <EditMessage msg={msg} />
+                            <DeleteMessage msg={msg} />
+                          </DropdownMenuGroup>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              onReplyMessageSend(msg);
+                            }}
+                          >
+                            Reply
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <img
                       src={url}
                       alt="sent-img"
@@ -131,13 +159,40 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                 return (
                   <div
                     key={idx}
-                    className="bg-red-100 text-sm p-2 rounded-lg max-w-xs mb-2"
+                    className="bg-red-100 relative text-sm p-2 rounded-lg max-w-xs mb-2"
                   >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <ChevronDown
+                          size={20}
+                          color="black"
+                          className={` opacity-0 transition-opacity duration-200 hover:opacity-100 z-50  absolute top-3  right-3 ${
+                            !isOutgoing && "ml-1"
+                          }`}
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {isOutgoing ? (
+                          <DropdownMenuGroup>
+                            <EditMessage msg={msg} />
+                            <DeleteMessage msg={msg} />
+                          </DropdownMenuGroup>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              onReplyMessageSend(msg);
+                            }}
+                          >
+                            Reply
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <div
                       onClick={() => setPreviewFile({ url, type })}
-                      className="cursor-pointer flex gap-4 ml-2 items-center  text-red-700 font-semibold hover:underline"
+                      className="cursor-pointer flex gap-1 pr-8 pl-1 py-1 ml-2 items-center  text-red-700 font-semibold hover:underline"
                     >
-                     <FileText/> Preview PDF
+                      <FileText /> <p className="ml-2">{fileName}</p>
                     </div>
                     <a
                       href={url}
@@ -155,8 +210,41 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                 return (
                   <div
                     key={idx}
-                    className="bg-blue-50 p-2 rounded-lg max-w-xs mb-2"
+                    className="bg-blue-50 relative p-2 rounded-lg max-w-xs mb-2"
                   >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <ChevronDown
+                          size={20}
+                          color="black"
+                          className={` opacity-0 transition-opacity duration-200 hover:opacity-100 z-50  absolute top-3  right-3 ${
+                            !isOutgoing && "ml-1"
+                          }`}
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {isOutgoing ? (
+                          <DropdownMenuGroup>
+                            <EditMessage msg={msg} />
+                            <DeleteMessage msg={msg} />
+                          </DropdownMenuGroup>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              onReplyMessageSend(msg);
+                            }}
+                          >
+                            Reply
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div
+                      onClick={() => setPreviewFile({ url, type })}
+                      className="cursor-pointer flex gap-1 pr-8 pl-1 py-1 ml-2 items-center  text-blue-700 font-semibold hover:underline"
+                    >
+                      <FileText /> <p className="ml-2">{fileName}</p>
+                    </div>
                     <a
                       href={url}
                       target="_blank"
@@ -173,8 +261,41 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                 return (
                   <div
                     key={idx}
-                    className="bg-green-50 p-2 rounded-lg max-w-xs mb-2"
+                    className="bg-green-50 p-2 relative rounded-lg max-w-xs mb-2"
                   >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <ChevronDown
+                          size={20}
+                          color="black"
+                          className={` opacity-0 transition-opacity duration-200 hover:opacity-100 z-50  absolute top-3  right-3 ${
+                            !isOutgoing && "ml-1"
+                          }`}
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {isOutgoing ? (
+                          <DropdownMenuGroup>
+                            <EditMessage msg={msg} />
+                            <DeleteMessage msg={msg} />
+                          </DropdownMenuGroup>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              onReplyMessageSend(msg);
+                            }}
+                          >
+                            Reply
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div
+                      onClick={() => setPreviewFile({ url, type })}
+                      className="cursor-pointer flex gap-1 pr-8 pl-1 py-1 ml-2 items-center  text-blue-600 font-semibold hover:underline"
+                    >
+                      <FileText /> <p className="ml-2">{fileName}</p>
+                    </div>
                     <a
                       href={url}
                       target="_blank"
@@ -190,25 +311,61 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
               return (
                 <div
                   key={idx}
-                  className="bg-gray-100 p-2 rounded-lg max-w-xs mb-2"
+                  className="bg-gray-100 p-2 relative rounded-lg max-w-xs mb-2"
                 >
-                 <a
-                      href={url}
-                      target="_blank"
-                      download
-                      className="block text-sm mt-2 text-blue-600 underline mb-2 text-center"
+                   <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <ChevronDown
+                          size={20}
+                          color="black"
+                          className={` opacity-0 transition-opacity duration-200 hover:opacity-100 z-50  absolute top-3  right-3 ${
+                            !isOutgoing && "ml-1"
+                          }`}
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {isOutgoing ? (
+                          <DropdownMenuGroup>
+                            <EditMessage msg={msg} />
+                            <DeleteMessage msg={msg} />
+                          </DropdownMenuGroup>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              onReplyMessageSend(msg);
+                            }}
+                          >
+                            Reply
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  <div
+                      onClick={() => setPreviewFile({ url, type })}
+                      className="cursor-pointer flex gap-1 pr-8 pl-1 py-1 ml-2 items-center  text-blue-600 font-semibold hover:underline"
                     >
-                      Download File
-                    </a>
+                      <FileText /> <p className="ml-2">{fileName}</p>
+                    </div>
+                  <a
+                    href={url}
+                    target="_blank"
+                    download
+                    className="block text-sm mt-2 text-blue-600 underline mb-2 text-center"
+                  >
+                    Download File
+                  </a>
                 </div>
               );
             })}
-
             <div
-              className={`p-3 text-sm ${
-                isOutgoing
-                  ? "rounded-l-lg rounded-br-lg bg-blue-800 text-white dark:bg-blue-900"
-                  : "rounded-r-lg rounded-bl-lg bg-white text-black dark:bg-gray-800 dark:text-white"
+              className={`${
+                msg.content?.trim()
+                  ? `p-3 text-sm ${
+                      isOutgoing
+                        ? "rounded-l-lg rounded-br-lg bg-blue-800 text-white dark:bg-blue-900"
+                        : "rounded-r-lg rounded-bl-lg bg-white text-black dark:bg-gray-800 dark:text-white"
+                    }`
+                  : "hidden"
               }`}
             >
               <div className="flex flex-col gap-1">
@@ -222,35 +379,38 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
                 )}
               </div>
 
-              <div className="flex items-center gap-1">
-                <p>{msg.content}</p>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <ChevronDown
-                      size={20}
-                      className={`opacity-0 transition-opacity duration-200 hover:opacity-100 ${
-                        !isOutgoing && "ml-1"
-                      }`}
-                    />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
-                    {isOutgoing ? (
-                      <DropdownMenuGroup>
-                        <EditMessage msg={msg} />
-                        <DeleteMessage msg={msg} />
-                      </DropdownMenuGroup>
-                    ) : (
-                      <DropdownMenuItem
-                        onClick={() => {
-                          onReplyMessageSend(msg);
-                        }}
-                      >
-                        Reply
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              {
+                <div className="flex items-center gap-1">
+                  {<p>{msg.content}</p>}
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <ChevronDown
+                        size={20}
+                        className={`opacity-0 transition-opacity duration-200 hover:opacity-100 ${
+                          !isOutgoing && "ml-1"
+                        }`}
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      {isOutgoing ? (
+                        <DropdownMenuGroup>
+                          <EditMessage msg={msg} />
+                          <DeleteMessage msg={msg} />
+                        </DropdownMenuGroup>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => {
+                            onReplyMessageSend(msg);
+                          }}
+                        >
+                          Reply
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              }
             </div>
             <span className="text-xs text-gray-400 dark:text-gray-500">
               {new Date(msg.createdAt).toLocaleTimeString()}
@@ -284,7 +444,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
       )}
 
       <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
-        <DialogContent className="flex justify-center my-auto w-full  flex-col">
+        <DialogContent className="flex justify-center my-auto w-full text-black bg-gray-400 flex-col">
           <DialogHeader>
             <DialogTitle className="text-base text-center font-semibold">
               File Preview
@@ -313,7 +473,10 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
             download
             className="block text-sm mt-2 text-blue-600 underline text-center"
           >
-           <Button variant={"blue"}> <Download/> Download</Button> 
+            <Button variant={"blue"}>
+              {" "}
+              <Download /> Download
+            </Button>
           </Link>
         </DialogContent>
       </Dialog>

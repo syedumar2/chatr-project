@@ -11,6 +11,7 @@ const MessageProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [socketConnected, setSocketConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -33,12 +34,10 @@ const MessageProvider = ({ children }) => {
     });
 
     socket.on("userStatusOnline", (data) => {
-      console.log("at userStatusOnline socket recieved", data); //redact after testing
       setOnlineUsers((prev) => [...prev, data]);
     });
 
     socket.on("userStatusOffline", (data) => {
-      console.log("at userStatusOffline socket recieved", data); //redact after testing
       setOnlineUsers((prev) =>
         prev.filter((user) => user.userId !== data.userId)
       );
@@ -77,12 +76,72 @@ const MessageProvider = ({ children }) => {
     };
   }, [accessToken]);
 
+  const postMessageWithFile = useCallback(
+    async ({ content, files = [], channelid, replyTo }) => {
+      console.log("postMessageWithFile params:", {
+        content,
+        files,
+        channelid,
+        replyTo,
+      });
+
+      if (!channelid) {
+        console.error("channelid is undefined");
+        return { success: false, error: "Channel ID is required" };
+      }
+
+      if (!files || files.length === 0) {
+        console.error("No content or files provided");
+        return {
+          success: false,
+          error: "Message content or files are required",
+        };
+      }
+
+      const formData = new FormData();
+      if (content) formData.append("content", content);
+      if (replyTo) formData.append("replyTo", replyTo);
+      files.forEach((file) => formData.append("files", file));
+
+      try {
+        const res = await messageApi.post(`/${channelid}`, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken || ""}`,
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(percent);
+          },
+        });
+
+        const newMessage = res.data?.data;
+        if (!newMessage) throw new Error("No message data returned from API");
+
+       
+        setUploadProgress(0);
+        return { success: true, data: newMessage };
+      } catch (err) {
+        setUploadProgress(0);
+        console.error("File Message send failed:", err);
+        return {
+          success: false,
+          error: err.message || "Failed to send message",
+        };
+      }
+    },
+    [accessToken, setMessages, setUploadProgress]
+  );
+  
+
   // GET messages for a channel
   const getMessage = useCallback(async (channelId) => {
     try {
       const res = await messageApi.get(`/${channelId}`);
       if (res?.data.success) {
         setMessages(res.data.data);
+        
         return { success: true };
       } else {
         return { success: false, message: res.data.message };
@@ -151,6 +210,8 @@ const MessageProvider = ({ children }) => {
         joinChannel,
         leaveChannel,
         onlineUsers,
+        postMessageWithFile,
+        uploadProgress,
       }}
     >
       {children}

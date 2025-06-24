@@ -2,13 +2,8 @@ import { useParams } from "react-router-dom";
 import { ChannelBar } from "./ChannelBar";
 import { Button } from "@/components/ui/button";
 import { MessageInput } from "./MessageInput";
-import {
-
-  CirclePlus,
-  Hash,
-
-} from "lucide-react";
-import { useState, useEffect, useContext, useRef,useMemo } from "react";
+import { CirclePlus, Hash } from "lucide-react";
+import { useState, useEffect, useContext, useRef, useMemo } from "react";
 import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
 import { toast } from "sonner";
@@ -142,20 +137,28 @@ const Channel = () => {
     }
   };
 
-
-
-
   //get channel details for this channel
-  return loading ? (
-    <div className="flex justify-center items-center h-screen">
-      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-    </div>
-  ) : (
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
     <>
-     <div className="sticky top-0 bg-blue-900 py-6 dark:bg-gray-900 border-t border-black p-4 z-50">
-       <h2 className="flex items-center  gap-2 font-semibold ml-4 tracking-wide"><Hash  size={20}/>{channelName}</h2>
-     </div>
+      {/* Channel Header */}
+      <div className="sticky top-0 bg-blue-900 py-6 dark:bg-gray-900 border-t border-black p-4 z-50">
+        <h2 className="flex items-center gap-2 font-semibold ml-4 tracking-wide">
+          <Hash size={20} />
+          {channelName}
+        </h2>
+      </div>
+
+      {/* Main Content */}
       <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
+        {/* Channel Sidebar */}
         <ChannelBar
           channelId={channelId}
           open={open}
@@ -181,7 +184,7 @@ const Channel = () => {
           onlineUsersMap={onlineUsersMap}
         />
 
-        {/* Floating Button */}
+        {/* Floating Action Button */}
         <Button
           onClick={() => getMessage(channelId)}
           className="bg-green-700 fixed top-[350px] right-2 sm:right-4 z-50 rounded-xl"
@@ -189,21 +192,21 @@ const Channel = () => {
           <CirclePlus />
         </Button>
 
-        {/* Messages */}
+        {/* Messages List */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList onReplyMessageSend={handleReplyMessage}
-          onlineUsersMap={onlineUsersMap} />
+          <MessageList
+            onReplyMessageSend={handleReplyMessage}
+            onlineUsersMap={onlineUsersMap}
+          />
         </div>
-
-        {/* Input Box */}
       </div>
-      <>
-        <MessageInput
-          channelId={channelId}
-          replyMessage={replyMessage}
-          clearReplyMessage={clearReplyMessage}
-        />
-      </>
+
+      {/* Message Input */}
+      <MessageInput
+        channelId={channelId}
+        replyMessage={replyMessage}
+        clearReplyMessage={clearReplyMessage}
+      />
     </>
   );
 };

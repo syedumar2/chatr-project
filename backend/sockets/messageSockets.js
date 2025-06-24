@@ -9,7 +9,7 @@ const initMessageSocket = (socket, io) => {
         { _id: socket.user },
         { status: "online" }
       );
-      console.log("This user is ", setOnline);
+ 
       if (!setOnline) {
         return socket.emit("error", { messsage: "User not found" });
       }

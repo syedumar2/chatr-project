@@ -34,6 +34,7 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
+app.set("io", io);
 
 //  Authenticate Socket Connections using JWT
 io.use((socket, next) => {
@@ -74,7 +75,12 @@ io.on("connection", (socket) => {
 app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
 // app.use(logger); // Enable when needed
+app.use((req, res, next) => {
+  req.io = app.get("io");
+  next();
+});
 
 // 🛣 API Routes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
