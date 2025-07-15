@@ -52,6 +52,14 @@ const updateUser = async (query, updateData) => {
   }
 };
 
+const updateAllUsers = async (query, updateData) => {
+  try {
+    return await UserModel.updateMany({ query }, {updateData}).lean().exec();
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deleteUser = async (deleteQuery) => {
   try {
     return await UserModel.deleteOne(deleteQuery).lean().exec();
@@ -85,4 +93,5 @@ module.exports = {
   addRefreshToken,
   removeRefreshToken,
   getUsers,
+  updateAllUsers,
 };

@@ -3,14 +3,20 @@ const { MessageDao } = require("../dao");
 const getMessages = async (req, res) => {
   try {
     const { channelid } = req.params;
-
+    console.log("channelId passed is", channelid);
+    const { before, limit } = req.query;
+    console.log("before is", before);
+    console.log("limit is", limit);
+    
     if (!channelid) {
       return res.status(200).json({
         success: false,
         message: "Empty input! No operation performed",
       });
     }
-    const messagesArray = await MessageDao.getMessage({ channel: channelid }); // Oldest first
+    
+    
+    const messagesArray = await MessageDao.getMessage(channelid,before,limit);
 
     return res.json({
       success: true,

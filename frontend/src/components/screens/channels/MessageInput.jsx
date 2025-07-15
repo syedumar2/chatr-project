@@ -25,12 +25,7 @@ export const MessageInput = ({ replyMessage, clearReplyMessage }) => {
 
   const handlePost = async (e) => {
     e.preventDefault();
-    const res = await postMessageWithFile({
-      content: inputField,
-      files,
-      channelid: channelId,
-      replyTo: replyMessage._id,
-    });
+    const res = await postMessage(inputField, channelId, replyMessage?._id);
 
     if (res.success) {
       setInputField("");
@@ -75,6 +70,16 @@ export const MessageInput = ({ replyMessage, clearReplyMessage }) => {
     fileInputRef.current?.click();
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (files.length === 0) {
+        handlePost(e);
+      } else {
+        handleUpload(e);
+      }
+    }
+  };
   return (
     <>
       {/* Upload Progress Bar */}
@@ -161,6 +166,7 @@ export const MessageInput = ({ replyMessage, clearReplyMessage }) => {
               className="h-10 w-full rounded bg-white px-3 text-sm text-black placeholder-gray-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
               type="text"
               value={inputField}
+              onKeyDown={handleKeyDown}
               onChange={(e) => setInputField(e.target.value)}
               placeholder="Type your message here…"
             />

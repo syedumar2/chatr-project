@@ -1,20 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useContext } from "react";
-import { Textarea } from "@/components/ui/textarea";
+
 import DeleteChannel from "./DeleteChannel";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 import { ChevronLeft, CircleUser, DivideCircle } from "lucide-react";
 import {
@@ -27,21 +16,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import AuthContext from "@/utils/contexts/auth/AuthContext";
-import MessageContext from "../../../utils/contexts/message/messageContext";
 
 export const ChannelBar = ({
   dmChannelId,
-
   dmChannelData,
   userId,
-onlineUsersMap,
+  onlineUsersMap,
   deleteDialogOpen,
   setDeleteDialogOpen,
 }) => {
-  const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
 
   return (

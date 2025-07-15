@@ -57,6 +57,10 @@ const MessageProvider = ({ children }) => {
       setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
     });
 
+    socket.on("channel-deleted", () => {
+      toast.info("Channel has been deleted");
+    });
+
     socket.on("error", ({ message }) => {
       toast.error("Error: ", message);
       console.error("Socket error:", message);
@@ -119,7 +123,6 @@ const MessageProvider = ({ children }) => {
         const newMessage = res.data?.data;
         if (!newMessage) throw new Error("No message data returned from API");
 
-       
         setUploadProgress(0);
         return { success: true, data: newMessage };
       } catch (err) {
@@ -133,30 +136,49 @@ const MessageProvider = ({ children }) => {
     },
     [accessToken, setMessages, setUploadProgress]
   );
-  
 
-  // GET messages for a channel
-  const getMessage = useCallback(async (channelId) => {
-    try {
-      const res = await messageApi.get(`/${channelId}`);
-      if (res?.data.success) {
-        setMessages(res.data.data);
-        
-        return { success: true };
-      } else {
-        return { success: false, message: res.data.message };
+  const getMessage = useCallback(
+    async (channelId, before = null, limit = 50) => {
+      if (!channelId) {
+        return { success: false, message: "Channel ID is required" };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error?.response?.data?.message || "An unexpected error occurred.",
-      };
-    }
-  }, []); // No dependency on accessToken here, just fetching data
+
+      try {
+        const params = new URLSearchParams({ limit });
+        if (before) {
+          params.append("before", before);
+        }
+
+        const res = await messageApi.get(`/${channelId}?${params.toString()}`);
+
+        if (res?.data.success) {
+          setMessages((prevMessages) => {
+            if (before) {
+              return [...res.data.data, ...prevMessages]; // prepend older messages
+            }
+            return res.data.data; // first load or refresh
+          });
+        } else {
+          return {
+            success: false,
+            message: res.data.message || "Failed to fetch messages",
+          };
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error?.response?.data?.message || "An unexpected error occurred.",
+        };
+      }
+    },
+    []
+  );
+  // No dependency on accessToken here, just fetching data
 
   // DELETE a message
   const deleteMessage = useCallback((messageid) => {
+    console.log(messageid);
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }
@@ -189,6 +211,7 @@ const MessageProvider = ({ children }) => {
 
   // UPDATE a message
   const updateMessage = useCallback((messageid, content, channel) => {
+    console.log("channel at frontend", channel);
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }

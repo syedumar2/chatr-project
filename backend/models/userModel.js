@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
         ref: "user",
       },
     ],
+    avatar : {
+      avatarUrl : String,
+      
+    },
     refreshTokens: [String],
   },
   {

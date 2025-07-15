@@ -1,4 +1,4 @@
-const { ChannelDao, UserDao } = require("../dao");
+const { ChannelDao, UserDao, MessageDao } = require("../dao");
 
 const updateChannelMember = async (req, res) => {
   try {
@@ -241,7 +241,7 @@ const getChannelsUserBelongsTo = async (req, res) => {
 const deleteChannel = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("at delete channel this is what we r getting", req.params.cid);
+
     const channelId = req.params.cid;
 
     if (!channelId) {
@@ -271,6 +271,15 @@ const deleteChannel = async (req, res) => {
         message: "Channel not found or already deleted",
       });
     }
+    await MessageDao.deleteAllMessages({ channel: channelId });
+    await UserDao.updateAllUsers(
+      { channels: channelId },
+      { $pull: { channels: channelId } }
+    );
+
+    //build file deletion logic later after deployment
+    req.io.to(channelId).emit("channel-deleted", { channelId });
+
     return res.json({
       success: true,
       message: "Channels Deleated successfully",

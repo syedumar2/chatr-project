@@ -2,17 +2,17 @@ import { useParams } from "react-router-dom";
 import { ChannelBar } from "./ChannelBar";
 import { Button } from "@/components/ui/button";
 import { MessageInput } from "./MessageInput";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Send } from "lucide-react";
 import { useState, useEffect, useContext, useRef, useMemo } from "react";
 import ChannelContext from "@/utils/contexts/channel/ChannelContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
-
+import { Hash } from "lucide-react";
 import MessageList from "./MessageList";
 import MessageContext from "@/utils/contexts/message/MessageContext";
 const Channel = () => {
   const { dmChannelId } = useParams();
   const { dmChannelData, getChannelData } = useContext(ChannelContext);
-
+  const [replyMessage, setReplyMessage] = useState(null);
   const { userId } = useContext(AuthContext);
   const { getMessage, joinChannel, leaveChannel, socketConnected } =
     useContext(MessageContext);
@@ -26,6 +26,15 @@ const Channel = () => {
 
   const prevChannelIdRef = useRef(null);
   const { onlineUsers } = useContext(MessageContext);
+
+  const handleReplyMessage = (data) => {
+    setReplyMessage(data); // store it if needed
+    console.log("At parent", data); // use this instead of replyMessage
+  };
+  const clearReplyMessage = () => {
+    setReplyMessage(null);
+  };
+
   const onlineUsersMap = useMemo(() => {
     const map = new Map();
     onlineUsers.forEach(({ userId, status }) => {
@@ -103,6 +112,13 @@ const Channel = () => {
     </div>
   ) : (
     <>
+      {/* Channel Header */}
+      <div className="sticky top-0 bg-blue-900 py-6 dark:bg-gray-900 border-t border-black p-4 z-50">
+        <h2 className="flex items-center gap-2 font-semibold ml-4 tracking-wide">
+          <Send size={20} />
+          {members.filter((member) => member._id !== userId)[0]?.name}
+        </h2>
+      </div>
       <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden sm:px-4 px-2 ">
         <ChannelBar
           dmChannelId={dmChannelId}
@@ -129,13 +145,21 @@ const Channel = () => {
 
         {/* Messages */}
         <div className="flex-grow flex flex-col-reverse overflow-y-auto p-4 pb-4 bg-gray-100 dark:bg-black">
-          <MessageList onlineUsersMap={onlineUsersMap} />
+          <MessageList
+            onlineUsersMap={onlineUsersMap}
+            onReplyMessageSend={handleReplyMessage}
+       
+          />
         </div>
 
         {/* Input Box */}
       </div>
       <div className="sticky bottom-0 z-10 bg-white dark:bg-black px-2 sm:px-4">
-        <MessageInput dmChannelId={dmChannelId} />
+        <MessageInput
+          dmChannelId={dmChannelId}
+          replyMessage={replyMessage}
+          clearReplyMessage={clearReplyMessage}
+        />
       </div>
     </>
   );

@@ -30,6 +30,7 @@ const DeleteMessage = ({ msg }) => {
       toast.info("Message deleted successfully");
       setOpen(false);
     } else {
+      
       toast.error(`Error: ${res.message}`);
     }
   };

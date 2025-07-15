@@ -14,13 +14,35 @@ const addMessage = async (messageData) => {
   }
 };
 
-const getMessage = async (query) => {
+const getMessage = async (channelId, before = null, limit = 15) => {
   try {
-    return await MessageModel.find(query)
+    console.log("Limit we getting is", limit);
+    console.log("before", before);
+
+    const query = { channel: channelId };
+
+    if (before) {
+      query.createdAt = { $lt: new Date(before) }; // Only messages created *before* this timestamp
+    }
+
+    const messages = await MessageModel.find(query)
       .populate("sender", "name email")
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 }) // get latest first, for consistent pagination
+      .limit(parseInt(limit))
       .lean()
       .exec();
+
+    // Reverse to get oldest-to-newest order on frontend
+    return messages.reverse();
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const getSingleMessage = async (messageId) => {
+  try {
+    return await MessageModel.findById(messageId);
   } catch (error) {
     console.log(error);
     throw error;
@@ -49,4 +71,19 @@ const deleteMessage = async (deleteQuery) => {
   }
 };
 
-module.exports = { addMessage, getMessage, updateMessage, deleteMessage };
+const deleteAllMessages = async (deleteQuery) => {
+  try {
+    return await MessageModel.deleteMany(deleteQuery).lean().exec();
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  addMessage,
+  getMessage,
+  updateMessage,
+  deleteMessage,
+  deleteAllMessages,
+  getSingleMessage
+};
