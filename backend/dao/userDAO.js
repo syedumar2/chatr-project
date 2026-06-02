@@ -20,7 +20,6 @@ const getUser = async (query) => {
       .exec();
   } catch (error) {
     throw error;
-    console.log(error);
   }
 };
 
@@ -31,7 +30,6 @@ const getUsers = async (query) => {
     }).limit(10);
   } catch (error) {
     throw error;
-    console.log(error);
   }
 };
 

@@ -4,20 +4,18 @@ const addMessage = async (messageData) => {
   try {
     const message = await MessageModel.create(messageData);
 
-    // Step 2: Populate the `sender` field (select only needed fields)
+   
     await message.populate("sender", "_id name email");
 
     return message;
   } catch (error) {
     throw error;
-    console.log(error);
   }
 };
 
 const getMessage = async (channelId, before = null, limit = 15) => {
   try {
-    console.log("Limit we getting is", limit);
-    console.log("before", before);
+    // pagination params received
 
     const query = { channel: channelId };
 
@@ -35,7 +33,7 @@ const getMessage = async (channelId, before = null, limit = 15) => {
     // Reverse to get oldest-to-newest order on frontend
     return messages.reverse();
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };
@@ -44,7 +42,7 @@ const getSingleMessage = async (messageId) => {
   try {
     return await MessageModel.findById(messageId);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };

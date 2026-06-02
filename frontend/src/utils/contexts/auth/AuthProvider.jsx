@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.patch("/update", { name, email, pwd });
       if (res.data.success) {
-        console.log("new user details", res.data.user);
         setUser(res.data.user);
         return { success: true };
       } else {
@@ -53,7 +52,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.patch("/update", { contacts });
       if (res.data.success) {
-        console.log("new user details", res.data.user);
         setUser(res.data.user);
         return { success: true };
       } else {
@@ -116,7 +114,7 @@ export const AuthProvider = ({ children }) => {
       setUserId(null);
       return { success: true, message: res.data.message };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (!error.response) {
         return { success: false, message: "No server response" };
       } else if (error.response?.status === 500) {
@@ -159,7 +157,8 @@ export const AuthProvider = ({ children }) => {
         return { success: true, userData: res.data.data };
       }
     } catch (err) {
-      return console.error(err?.response?.data?.message || err?.message);
+      console.error(err?.response?.data?.message || err?.message);
+      return { success: false, message: err?.response?.data?.message || err?.message };
     }
   };
 

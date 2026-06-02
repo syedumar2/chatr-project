@@ -21,7 +21,7 @@ const addUser = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.json({ succes: false, message: error?.message });
   }
 };
@@ -42,7 +42,7 @@ const getUser = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.json({ succes: false, message: error?.message });
   }
 };
@@ -55,7 +55,7 @@ const deleteUser = async (req, res, next) => {
       data: await UserDao.deleteUser(req.body),
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.json({ succes: false, message: error?.message });
   }
 };
@@ -68,7 +68,7 @@ const updateUser = async (req, res, next) => {
       data: await UserDao.updateUser(req.body.query, req.body.updateData),
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.json({ succes: false, message: error?.message });
   }
 };

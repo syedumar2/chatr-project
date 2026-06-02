@@ -20,7 +20,6 @@ export const MessageInput = ({ replyMessage, clearReplyMessage }) => {
   const fileInputRef = useRef(null);
   const { postMessage, postMessageWithFile, uploadProgress } =
     useContext(MessageContext);
-  const { userId } = useContext(AuthContext);
   const { channelId } = useParams();
 
   const handlePost = async (e) => {

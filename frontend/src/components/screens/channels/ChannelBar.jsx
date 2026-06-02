@@ -13,13 +13,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useContext, useMemo, useState } from "react";
+
 
 import { UpdateChannelDetails } from "./UpdateChannelDetails";
 import { AddChannelMembers } from "./AddChannelMembers";
 import { RemoveChannelMembers } from "./RemoveChannelMembers";
 import DeleteChannel from "./DeleteChannel";
-import MessageContext from "@/utils/contexts/message/messageContext";
+
 
 export const ChannelBar = ({
   channelId,
@@ -44,7 +44,7 @@ export const ChannelBar = ({
   setDeleteDialogOpen,
   onlineUsersMap,
 }) => {
-  const [email, setEmail] = useState("");
+
 
   return (
     <Sheet>

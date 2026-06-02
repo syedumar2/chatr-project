@@ -17,6 +17,7 @@ const messageSchema = new mongoose.Schema(
     },
     files: [
       {
+        fileName: String,
         fileUrl: String,
         fileType: String,
       },
@@ -28,7 +29,7 @@ const messageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("message", messageSchema);

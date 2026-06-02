@@ -32,7 +32,6 @@ const Layout = ({ children }) => {
     const res = await logout();
     if (res.success) {
       setUserData(null);
-      console.log(res.message);
       navigate("/signin");
     } else {
       alert(res.message);

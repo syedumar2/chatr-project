@@ -21,7 +21,6 @@ const ChannelProvider = ({ children }) => {
         setDmChannelData(
           res?.data?.channels.filter((channel) => !channel.isGroup)
         );
-        console.log(res.data)
       } else {
         return { success: false, message: res.data.message };
       }

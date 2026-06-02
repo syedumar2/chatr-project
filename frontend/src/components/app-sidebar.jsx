@@ -37,13 +37,16 @@ const AppSidebar = () => {
   const toggleChannels = () => setChannelsOpen(!channelsOpen);
   const toggleDm = () => setDmOpen(!dmOpen);
 
+  const hasChannels = Array.isArray(channelData) && channelData.length > 0;
+  const hasDms = Array.isArray(dmChannelData) && dmChannelData.length > 0;
+  const hasContacts = Array.isArray(user?.contacts) && user.contacts.length > 0;
+
   useEffect(() => {
     const fetchData = async () => {
       await getChannelData();
     };
     fetchData();
-  
-  }, []);
+  }, [getChannelData]);
 
   return (
     <Sidebar>
@@ -65,118 +68,114 @@ const AppSidebar = () => {
               </SidebarMenuItem>
 
               {/* Channels (Collapsible) */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={toggleChannels}
-                  className="flex items-center justify-between w-full"
-                >
-                  <div className="flex items-center gap-2">
-                    <Inbox size={18} />
-                    <span>Channels</span>
-                  </div>
-                  {channelsOpen ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Submenu - Hardcoded channels */}
-              {channelsOpen &&
-                (channelData ? (
-                  <div className="ml-8 mt-1 space-y-1 text-sm">
-                    {channelData.map((channel) => (
-                      <div
-                        className="flex items-center gap-2 hover:underline"
-                        key={channel._id}
-                      >
-                        <Hash size={16} />
-                        <Link to={`/channel/${channel._id}`}>
-                          {" "}
-                          {channel.name}
-                        </Link>
+              {hasChannels && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={toggleChannels}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Inbox size={18} />
+                        <span>Channels</span>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="ml-8 mt-1 space-y-1 text-sm">
-                    <Hash size={16} />
-                    <span>Server Fetch failed</span>
-                  </div>
-                ))}
+                      {channelsOpen ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {channelsOpen && (
+                    <div className="ml-8 mt-1 space-y-1 text-sm">
+                      {channelData.map((channel) => (
+                        <div
+                          className="flex items-center gap-2 hover:underline"
+                          key={channel._id}
+                        >
+                          <Hash size={16} />
+                          <Link to={`/channel/${channel._id}`}>
+                            {channel.name}
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
               {/* Direct Messages collapsible */}
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={toggleDm}
-                  className="flex items-center justify-between w-full"
-                >
-                  <div className="flex items-center gap-2">
-                    <Send size={18} />
-                    <span>Direct Messages</span>
-                  </div>
-                  {channelsOpen ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
-                  )}
-                </SidebarMenuButton>
-                {dmOpen && (
-                  <div className="ml-8 mt-1 space-y-1 text-sm">
-                    {dmChannelData ? (
-                      dmChannelData.map((channel) => (
+              {hasDms && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={toggleDm}
+                    className="flex items-center justify-between w-full"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Send size={18} />
+                      <span>Direct Messages</span>
+                    </div>
+                    {dmOpen ? (
+                      <ChevronDown size={16} />
+                    ) : (
+                      <ChevronRight size={16} />
+                    )}
+                  </SidebarMenuButton>
+                  {dmOpen && (
+                    <div className="ml-8 mt-1 space-y-1 text-sm">
+                      {dmChannelData.map((channel) => (
                         <div
                           className="flex items-center gap-2 hover:underline"
                           key={channel._id}
                         >
                           <Send size={16} />
-                          <Link to={`/channel/dm/${channel._id}`}>{channel.members.find(u=> u._id !== user._id)?.name}</Link>
+                          <Link to={`/channel/dm/${channel._id}`}>{channel.members.find((u) => u._id !== user._id)?.name}</Link>
                         </div>
-                      ))
-                    ) : (
-                      <div className="flex items-center gap-2 hover:underline">
-                        <Hash size={16} />
-                        <span>Dummy Channel</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </SidebarMenuItem>
+                      ))}
+                    </div>
+                  )}
+                </SidebarMenuItem>
+              )}
 
               {/* Contacts */}
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={toggleContacts}
-                  className="flex items-center justify-between w-full"
-                >
-                  <div className="flex items-center gap-2">
-                    <Contact size={18} />
-                    <span>Contacts</span>
-                  </div>
-                  {contactsOpen ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {contactsOpen && (
-                <div className="ml-8 mt-1 space-y-1 text-sm">
-                  {user?.contacts?.map((u, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-2 hover:underline"
+              {hasContacts && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={toggleContacts}
+                      className="flex items-center justify-between w-full"
                     >
-                      <CircleUser size={20} />
-                      <Link to={`/contact/${u?._id}`}>
-                        <span className="hover:cursor-pointer">{u?.name}</span>
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Contact size={18} />
+                        <span>Contacts</span>
+                      </div>
+                      {contactsOpen ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {contactsOpen && (
+                    <div className="ml-8 mt-1 space-y-1 text-sm">
+                      {user.contacts.map((u, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 hover:underline"
+                        >
+                          <CircleUser size={20} />
+                          <Link to={`/contact/${u?._id}`}>
+                            <span className="hover:cursor-pointer">{u?.name}</span>
+                          </Link>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
 
               <SidebarMenuItem>

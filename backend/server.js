@@ -1,14 +1,11 @@
-//  Load Environment Variables
 require("dotenv").config();
 
-// 🧱 Core Modules and Middleware
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
-//  Custom Modules
 require("./db-config"); // MongoDB Connection
 const logger = require("./middleware/logger");
 const { MessageSocket } = require("./sockets");
@@ -19,12 +16,11 @@ const {
   MessageRoutes,
 } = require("./router");
 
-//  Express & HTTP Setup
+
 const app = express();
 const { createServer } = require("http");
 const httpServer = createServer(app);
 
-// ⚡ Socket.IO Setup
 const { Server } = require("socket.io");
 const io = new Server(httpServer, {
   cors: {
@@ -36,7 +32,6 @@ const io = new Server(httpServer, {
 });
 app.set("io", io);
 
-//  Authenticate Socket Connections using JWT
 io.use((socket, next) => {
   const authHeader = socket.handshake.auth?.token;
 
@@ -55,10 +50,8 @@ io.use((socket, next) => {
     next(new Error("Authentication failed"));
   }
 });
-
-// 🎧 Socket.IO Event Handling
+//TODO : Create delete aws files and prepare for deployment
 io.on("connection", (socket) => {
-  console.log(`⚡ New socket connected: ${socket.id} (user: ${socket.user})`);
 
   MessageSocket.initMessageSocket(socket, io);
 
@@ -67,35 +60,30 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`❌ Socket disconnected: ${socket.id}`);
+    console.info(`❌ Socket disconnected: ${socket.id}`);
   });
 });
 
-// 🧩 Express Middleware
 app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// app.use(logger); // Enable when needed
 app.use((req, res, next) => {
   req.io = app.get("io");
   next();
 });
 
-// 🛣 API Routes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/user", MasterRouter);
 app.use("/api/auth", AuthRouter);
 app.use("/api/channel", ChannelRoutes);
 app.use("/api/message", MessageRoutes);
 
-// 🩺 Health Check Route
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Server is up and running ✅" });
 });
 
-// 🚀 Start the Server
 const PORT = process.env.PORT || 3500;
 httpServer.listen(PORT, () => {
-  console.log(`🌐 Server listening on http://localhost:${PORT}`);
+  console.info(`🌐 Server listening on http://localhost:${PORT}`);
 });

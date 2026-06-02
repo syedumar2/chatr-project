@@ -88,14 +88,14 @@ const dmChannel = async (req, res) => {
       isGroup: false,
       members: channelMembersId,
     });
-    console.log("existing channel details", existingChannel);
+    // existingChannel fetched
     if (existingChannel.length > 0) {
       return res
         .status(409)
         .json({ success: false, message: "Channel already exists" });
     }
 
-    console.log(channelMembersId);
+    // channelMembersId prepared
     const channel = await ChannelDao.addChannel({
       name: `dm-${channelMembersId[0]}-${channelMembersId[1]}`,
       isGroup: false,
@@ -114,7 +114,7 @@ const dmChannel = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error at dmChannel: ", error);
+    console.error("Error at dmChannel: ", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -188,7 +188,7 @@ const addChannel = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error at addChannel: ", error);
+    console.error("Error at addChannel: ", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -286,7 +286,7 @@ const deleteChannel = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.log("Error in deleteChannel controller", error);
+    console.error("Error in deleteChannel controller", error);
     res.json({ success: false, message: error?.message });
   }
 };
@@ -339,7 +339,7 @@ const updateChannel = async (req, res) => {
       data: updatedChannel,
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.status(500).json({ success: false, message: error?.message });
   }
 };

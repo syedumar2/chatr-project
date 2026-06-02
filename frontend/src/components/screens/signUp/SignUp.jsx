@@ -18,10 +18,10 @@ import { useTheme } from "../../../utils/contexts/theme/ThemeContext";
 import AuthContext from "../../../utils/contexts/auth/AuthContext";
 
 const NAME_REGEX = /^[a-zA-Z]+(?: [A-Za-z]+)*$/;
-const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/;
-const PWD_REGEX = /[a-zA-Z0-9]{8,30}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+$/;
+const PWD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,30}$/;
 
-//TODO: make better password regex and validation
+// Passwords must be 8-30 chars and contain at least one letter and one number.
 
 const SignUp = () => {
   const nameRef = useRef();
@@ -47,7 +47,6 @@ const SignUp = () => {
   const [matchFocus, setMatchFocus] = useState(false);
 
   const [errMsg, setErrMsg] = useState("");
-  const [succes, setSucces] = useState(false);
 
   useEffect(() => {
     nameRef.current.focus();
@@ -89,9 +88,8 @@ const SignUp = () => {
     const res = await register(name, email, pwd);
 
     if (res.success) {
-      alert("Register successfull. You can now Log in");
+      alert("Register successful. You can now Log in");
       navigate("/signin");
-      setSucces(true);
     } else {
       setErrMsg(res.message);
       errRef.current?.focus();
@@ -223,8 +221,8 @@ const SignUp = () => {
                 className={!validPwd && pwd && pwdFocus ? "" : "hidden"}
               >
                 <div className="flex items-center gap-2 text-xs mt-1.5 bg-accent-foreground p-4 rounded text-white dark:text-black">
-                  <Info /> Password must be at least 8 characters and include
-                  letters and numbers.
+                  <Info /> Password must be 8-30 characters and include at least
+                  one letter and one number. Special characters are allowed.
                 </div>
               </div>
             </div>
@@ -296,4 +294,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
-//TODO make rest of the validation logic for Email and Password
+

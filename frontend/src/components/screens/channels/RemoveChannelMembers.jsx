@@ -49,7 +49,7 @@ export const RemoveChannelMembers = ({
     const finalList = emailList.filter(
       (email) => !markedForDelete.includes(email)
     );
-    console.log("Send this to backend:", finalList);
+    toast.info(JSON.stringify(finalList));
     const res = await updateChannelMembers(channelId, finalList);
     if (res.success) {
       toast.success("Members updated!");

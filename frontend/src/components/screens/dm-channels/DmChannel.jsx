@@ -29,7 +29,6 @@ const Channel = () => {
 
   const handleReplyMessage = (data) => {
     setReplyMessage(data); // store it if needed
-    console.log("At parent", data); // use this instead of replyMessage
   };
   const clearReplyMessage = () => {
     setReplyMessage(null);
@@ -59,14 +58,13 @@ const Channel = () => {
       joinChannel(dmChannelId);
       prevChannelIdRef.current = dmChannelId;
 
-      console.log("🔁 Switched to channel:", dmChannelId);
+      // switched to dm channel
     }
 
     return () => {
-      if (prevChannelIdRef.current) {
+        if (prevChannelIdRef.current) {
         leaveChannel(prevChannelIdRef.current);
         prevChannelIdRef.current = null;
-        console.log("💨 Cleanup: left channel", prevChannelIdRef.current);
       }
     };
   }, [socketConnected, dmChannelId]);
@@ -82,8 +80,7 @@ const Channel = () => {
 
   useEffect(() => {
     if (dmChannelData) {
-      console.log("DM Channel Data obtained", dmChannelData);
-      console.log("dmChannelId is", dmChannelId);
+      // DM channel data obtained
       setLoading(true);
 
       try {

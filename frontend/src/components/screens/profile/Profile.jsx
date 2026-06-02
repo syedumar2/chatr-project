@@ -23,9 +23,7 @@ const ProfileCard = () => {
   };
 
   useEffect(() => {
-    console.log(user);
     setAddedContacts(user?.contacts.map((u)=>u._id));
-    console.log(addedContacts)
   }, [user]);
 
   return (

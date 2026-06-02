@@ -21,8 +21,6 @@ const Contact = () => {
       const foundContact = user.contacts.find((u) => u._id === id);
       setContact(foundContact);
     }
-    console.log("user data appearing from server", user);
-    console.log("all dm channelData", dmChannelData);
   }, [user, id]);
 
   const directMessage = async (memberId) => {

@@ -43,7 +43,6 @@ const Channel = () => {
 
   const handleReplyMessage = (data) => {
     setReplyMessage(data); // store it if needed
-    console.log("At parent", data); // use this instead of replyMessage
   };
   const clearReplyMessage = () => {
     setReplyMessage(null);
@@ -62,14 +61,13 @@ const Channel = () => {
       joinChannel(channelId);
       prevChannelIdRef.current = channelId;
 
-      console.log("🔁 Switched to channel:", channelId);
+      // switched to channel
     }
 
     return () => {
-      if (prevChannelIdRef.current) {
+        if (prevChannelIdRef.current) {
         leaveChannel(prevChannelIdRef.current);
         prevChannelIdRef.current = null;
-        console.log("💨 Cleanup: left channel", prevChannelIdRef.current);
       }
     };
   }, [socketConnected, channelId]);
@@ -85,7 +83,7 @@ const Channel = () => {
 
   useEffect(() => {
     if (channelData) {
-      console.log("Channel Data obtained", channelData);
+      // Channel data obtained
       setLoading(true);
 
       try {
@@ -102,7 +100,7 @@ const Channel = () => {
           (member) => member._id === thisChannel?.createdBy
         );
         setCreatorEmail(creator?.email);
-        console.log("Creator Email:", creator?.email);
+        // Creator email set
       } catch (error) {
         console.error("Error loading channel:", error);
       } finally {
@@ -110,9 +108,7 @@ const Channel = () => {
       }
     }
   }, [channelData, channelId]);
-  // only runs when channelData updates
 
-  //TODO: make an update channel method
 
   const handleUpdate = async (e) => {
     e.preventDefault();

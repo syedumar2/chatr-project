@@ -96,7 +96,7 @@ const initMessageSocket = (socket, io) => {
 
       io.in(channel).emit("updatedMessage", result);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       socket.emit("error", { message: "Failed to edit message." });
     }
   });
@@ -132,7 +132,7 @@ const initMessageSocket = (socket, io) => {
 
       io.in(channel).emit("deletedMessage", result);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       socket.emit("error", { message: "Failed to delete message." });
     }
   });

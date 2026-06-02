@@ -27,8 +27,6 @@ const EditMessage = ({ msg, channelId }) => {
       e.preventDefault();
 
       const res = await updateMessage(msg._id, editedContent, channelId);
-      console.log(msg._id)
-      console.log(channelId);
       if (res?.success) {
         toast.success("Message updated successfully");
         setOpen(false);

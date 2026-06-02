@@ -125,7 +125,7 @@ const loginUser = async (req, res) => {
       data: { fullname: user.fullname, email: user.email },
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.json({ success: false, message: error?.message });
   }
 };

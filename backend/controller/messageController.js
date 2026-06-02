@@ -1,22 +1,20 @@
 const { MessageDao } = require("../dao");
+const { putObject } = require("../config/s3");
 
 const getMessages = async (req, res) => {
   try {
     const { channelid } = req.params;
-    console.log("channelId passed is", channelid);
+
     const { before, limit } = req.query;
-    console.log("before is", before);
-    console.log("limit is", limit);
-    
+
     if (!channelid) {
       return res.status(200).json({
         success: false,
         message: "Empty input! No operation performed",
       });
     }
-    
-    
-    const messagesArray = await MessageDao.getMessage(channelid,before,limit);
+
+    const messagesArray = await MessageDao.getMessage(channelid, before, limit);
 
     return res.json({
       success: true,
@@ -24,7 +22,7 @@ const getMessages = async (req, res) => {
       data: messagesArray,
     });
   } catch (error) {
-    console.log("Error at getMessage: ", error);
+    console.error("Error at getMessage: ", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -42,10 +40,20 @@ const postMessageWithFile = async (req, res) => {
       });
     }
 
-    const files = req.files.map((file) => ({
-      fileUrl: `/uploads/${file.filename}`,
-      fileType: file.mimetype,
-    }));
+    async function uploadFiles(files) {
+      const uploadedFiles = [];
+      for (const file of files) {
+        const fileUrl = await putObject(file.originalname, file.buffer, file.mimetype);
+        uploadedFiles.push({
+          fileName: file.originalname,
+          fileUrl,
+          fileType: file.mimetype,  
+        });
+      }
+      return uploadedFiles;
+    }
+
+    const files = req.files ? await uploadFiles(req.files) : [];
 
     const message = await MessageDao.addMessage({
       sender: userId,
@@ -54,8 +62,9 @@ const postMessageWithFile = async (req, res) => {
       files,
       replyTo,
     });
-    //  ✅ Emit real-time update
+
     req.io.to(channelid).emit("newMessage", message);
+
 
     return res.json({
       success: true,
@@ -63,7 +72,7 @@ const postMessageWithFile = async (req, res) => {
       data: message,
     });
   } catch (error) {
-    console.log("Error at sendMessage: ", error);
+    console.error("Error at sendMessage: ", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

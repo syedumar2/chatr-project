@@ -101,7 +101,7 @@ export const AddChannelMembers = ({
               <Button
                 variant="secondary"
                 type="button"
-                onClick={() => console.log("Members here are", email)}
+                onClick={() => toast.info(JSON.stringify(email))}
               >
                 {" "}
                 <CircleAlert />

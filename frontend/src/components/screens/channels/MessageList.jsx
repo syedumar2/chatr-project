@@ -9,24 +9,9 @@ import {
 import { useParams } from "react-router-dom";
 import MessageContext from "@/utils/contexts/message/MessageContext";
 import AuthContext from "@/utils/contexts/auth/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronDown, FileText, Download } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import EditMessage from "./EditMessage";
-import DeleteMessage from "./DeleteMessage";
 import { Button } from "@/components/ui/button";
+import FilePreviewDialog from "./FilePreviewDialog";
+import MessageItem from "./MessageItem";
 
 const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
   const { channelId } = useParams();
@@ -69,7 +54,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
     if (isInitialLoad.current && !isLoadingOlder) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, isLoadingOlder]);
 
   // Detect scroll to top to show "Load Older Messages" button
   useEffect(() => {
@@ -107,14 +92,7 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
     setIsLoadingOlder(true);
     try {
       const oldest = messages[0];
-      console.log(
-        "Fetching older messages for channel:",
-        channelId,
-        "before:",
-        oldest.createdAt
-      );
       const res = await getMessage(channelId, oldest.createdAt);
-      console.log("getMessage response:", res);
       if (!res) {
         console.error("getMessage returned undefined for older messages");
         setHasMoreMessages(false);
@@ -153,116 +131,14 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
 
       return (
         <div key={msg._id}>
-          <div
-            className={`flex w-full max-w-xs space-x-3 ${
-              isOutgoing ? "ml-auto justify-end" : ""
-            }`}
-          >
-            {/* Avatar (Incoming) */}
-            {!isOutgoing && (
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className="relative">
-                    <Avatar className="size-10">
-                      <AvatarImage src={msg.sender?.avatarUrl || ""} />
-                      <AvatarFallback className="bg-cyan-700 p-2 text-2xl">
-                        {msg.sender?.name
-                          ? msg.sender.name.charAt(0).toUpperCase()
-                          : "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    {onlineUsersMap.get(msg?.sender?._id) === "online" && (
-                      <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2  bg-green-500" />
-                    )}
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <div className="rounded bg-accent p-2 text-sm">
-                    <p>
-                      <strong>Name:</strong> {msg.sender?.name || "Unknown"}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {msg.sender?.email || "N/A"}
-                    </p>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
-            {/* Message bubble */}
-            <div className="flex flex-col">
-              <div
-                className={`p-3 text-sm ${
-                  isOutgoing
-                    ? "rounded-l-lg rounded-br-lg bg-blue-800 text-white dark:bg-blue-900"
-                    : "rounded-r-lg rounded-bl-lg bg-white text-black dark:bg-gray-800 dark:text-white"
-                }`}
-              >
-                {repliedMessage && (
-                  <div className="mb-1 border-l-4 border-blue-500 bg-gray-100 px-2 py-1 text-xs text-gray-600">
-                    <p className="font-semibold">
-                      {repliedMessage.sender?.name || "Unknown"}
-                    </p>
-                    <p className="truncate">{repliedMessage.content}</p>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-1">
-                  <p>{msg.content}</p>
-                  {msg.file && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setPreviewFile({
-                          url: msg.file.url,
-                          type: msg.file.type,
-                        })
-                      }
-                    >
-                      <FileText size={16} /> View File
-                    </Button>
-                  )}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <ChevronDown
-                        size={20}
-                        className="opacity-0 transition-opacity duration-200 hover:opacity-100"
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      {isOutgoing ? (
-                        <DropdownMenuGroup>
-                          <EditMessage msg={msg} />
-                          <DeleteMessage msg={msg} />
-                        </DropdownMenuGroup>
-                      ) : (
-                        <DropdownMenuItem onClick={handleReply}>
-                          Reply
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                {new Date(msg.createdAt).toLocaleTimeString()}
-              </span>
-            </div>
-
-            {/* Avatar (Outgoing) */}
-            {isOutgoing && (
-              <Avatar className="size-10">
-                <AvatarImage src={msg.sender?.avatarUrl || ""} />
-                <AvatarFallback className="bg-purple-600 p-2 text-2xl">
-                  {msg.sender?.name
-                    ? msg.sender.name.charAt(0).toUpperCase()
-                    : "?"}
-                </AvatarFallback>
-              </Avatar>
-            )}
-          </div>
-
+          <MessageItem
+            message={msg}
+            isOutgoing={isOutgoing}
+            repliedMessage={repliedMessage}
+            onReply={handleReply}
+            onPreviewFile={setPreviewFile}
+            onlineUsersMap={onlineUsersMap}
+          />
           {i === messages.length - 1 && <div ref={messagesEndRef} />}
         </div>
       );
@@ -317,45 +193,12 @@ const MessageList = ({ onReplyMessageSend, onlineUsersMap }) => {
         </div>
       )}
 
-      {/* Preview Dialog */}
-      <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
-        <DialogContent className="flex justify-center my-auto w-full text-black bg-gray-400 flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-base text-center font-semibold">
-              File Preview
-            </DialogTitle>
-          </DialogHeader>
-          {previewFile && previewFile.url && (
-            <>
-              {previewFile.type?.startsWith("image/") && (
-                <img
-                  src={previewFile.url}
-                  alt="preview"
-                  className="max-w-full max-h-[70vh] object-contain rounded"
-                />
-              )}
-              {previewFile.type === "application/pdf" && (
-                <iframe
-                  src={previewFile.url}
-                  title="PDF"
-                  className="max-w-full h-[70vh] border rounded"
-                />
-              )}
-              <a
-                href={previewFile.url}
-                target="_blank"
-                download
-                className="block text-sm mt-2 text-blue-600 underline text-center"
-                rel="noopener noreferrer"
-              >
-                <Button variant="blue">
-                  <Download /> Download
-                </Button>
-              </a>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* File Preview Dialog */}
+      <FilePreviewDialog
+        file={previewFile}
+        open={!!previewFile}
+        onOpenChange={() => setPreviewFile(null)}
+      />
     </div>
   );
 };

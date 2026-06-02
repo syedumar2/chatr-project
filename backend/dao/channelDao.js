@@ -5,7 +5,6 @@ const addChannel = async (ChannelData) => {
     return await ChannelModel.create(ChannelData);
   } catch (error) {
     throw error;
-    console.log(error);
   }
 };
 
@@ -17,7 +16,6 @@ const getChannel = async (query) => {
       .exec();
   } catch (error) {
     throw error;
-    console.log(error);
   }
 };
 

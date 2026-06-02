@@ -33,15 +33,27 @@ const MessageProvider = ({ children }) => {
       setSocketConnected(false);
     });
 
-    socket.on("userStatusOnline", (data) => {
-      setOnlineUsers((prev) => [...prev, data]);
-    });
+    const handleUserOnline = (data) => {
+      setOnlineUsers((prev) => {
+        const existingIndex = prev.findIndex((user) => user.userId === data.userId);
+        if (existingIndex !== -1) {
+          return prev.map((user) =>
+            user.userId === data.userId ? data : user
+          );
+        }
+        return [...prev, data];
+      });
+    };
 
-    socket.on("userStatusOffline", (data) => {
+    const handleUserOffline = (data) => {
       setOnlineUsers((prev) =>
         prev.filter((user) => user.userId !== data.userId)
       );
-    });
+    };
+
+    socket.on("userStatusOnline", handleUserOnline);
+    socket.on("userStatusOffline", handleUserOffline);
+
     //Message Events
     socket.on("newMessage", (message) => {
       setMessages((prev) => [...prev, message]);
@@ -71,23 +83,21 @@ const MessageProvider = ({ children }) => {
       socket.off("connect");
       socket.off("welcome");
       socket.off("disconnect");
+      socket.off("userStatusOnline", handleUserOnline);
+      socket.off("userStatusOffline", handleUserOffline);
       socket.off("newMessage");
       socket.off("updatedMessage");
       socket.off("deletedMessage");
       socket.off("error");
       socket.disconnect();
       socketRef.current = null;
+      setOnlineUsers([]);
     };
   }, [accessToken]);
 
   const postMessageWithFile = useCallback(
     async ({ content, files = [], channelid, replyTo }) => {
-      console.log("postMessageWithFile params:", {
-        content,
-        files,
-        channelid,
-        replyTo,
-      });
+      // posting message with files
 
       if (!channelid) {
         console.error("channelid is undefined");
@@ -178,7 +188,6 @@ const MessageProvider = ({ children }) => {
 
   // DELETE a message
   const deleteMessage = useCallback((messageid) => {
-    console.log(messageid);
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }
@@ -211,7 +220,6 @@ const MessageProvider = ({ children }) => {
 
   // UPDATE a message
   const updateMessage = useCallback((messageid, content, channel) => {
-    console.log("channel at frontend", channel);
     if (!socketRef.current || !socketRef.current.connected) {
       return { success: false, message: "Socket not connected." };
     }

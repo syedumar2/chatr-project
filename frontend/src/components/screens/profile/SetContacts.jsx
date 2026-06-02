@@ -96,7 +96,6 @@ const SetContacts = ({
                     }
                     onClick={() => {
                       toggleContact(u?._id);
-                      console.log(addedContacts);
                     }}
                   >
                     {addedContacts.includes(u?._id) ? (
