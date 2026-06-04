@@ -95,7 +95,7 @@ const dmChannel = async (req, res) => {
         .json({ success: false, message: "Channel already exists" });
     }
 
-    // channelMembersId prepared
+
     const channel = await ChannelDao.addChannel({
       name: `dm-${channelMembersId[0]}-${channelMembersId[1]}`,
       isGroup: false,

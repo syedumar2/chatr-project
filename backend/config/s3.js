@@ -30,8 +30,8 @@ async function putObject(key, body, contentType) {
     Body: body,
     ContentType: contentType,
   });
-  await s3Client.send(command);
-  return await getObjectUrl(key);
+  return await s3Client.send(command);
+
 }
 
 async function deleteObject(key) {

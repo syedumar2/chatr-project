@@ -53,10 +53,12 @@ const initMessageSocket = (socket, io) => {
         replyTo: replyMessageId,
       });
 
+      const messageObject = message && message.toObject ? message.toObject() : message;
+
       // Emit to all users in the channel
-      io.in(channel).emit("newMessage", message);
+      io.in(channel).emit("newMessage", messageObject);
       // Confirm to sender
-      socket.emit("messageSent", { success: true, data: message });
+      socket.emit("messageSent", { success: true, data: messageObject });
     } catch (error) {
       socket.emit("error", { message: "Failed to send message." });
     }

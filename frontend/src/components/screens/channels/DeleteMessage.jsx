@@ -30,7 +30,6 @@ const DeleteMessage = ({ msg }) => {
       toast.info("Message deleted successfully");
       setOpen(false);
     } else {
-      
       toast.error(`Error: ${res.message}`);
     }
   };
@@ -40,7 +39,10 @@ const DeleteMessage = ({ msg }) => {
       {/* This acts as the clickable item in the dropdown */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={(e) => e.preventDefault()}
+          >
             Delete Message
           </DropdownMenuItem>
         </DialogTrigger>
@@ -56,12 +58,12 @@ const DeleteMessage = ({ msg }) => {
 
             <DialogFooter className="flex justify-between">
               <div className="flex justify-between items-center w-full">
-                  <Button variant="secondary" onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="destructive" type="submit">
-                    Delete
-                  </Button>
+                <Button variant="secondary" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" type="submit">
+                  Delete
+                </Button>
               </div>
             </DialogFooter>
           </form>
